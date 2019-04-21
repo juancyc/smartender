@@ -1,0 +1,9 @@
+Sensores y actuadores para smartender
+1.	Sensor de presion atmosferica bmp180
+2.	Sensor de temperatura y humedad dht11
+3.	Sensor de intensidad de luz ldr
+4.	Modulo wifi Esp8266 Esp01
+5.	Motor eléctrico + puente H
+6.	Display I2C
+7.	Tira de leds RGB
+8.	Buzzer/

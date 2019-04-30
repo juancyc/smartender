@@ -2,6 +2,7 @@ const int pinBuzzer = 9;
 
 void setup() 
 {
+  pinMode(pinBuzzer,OUTPUT);
 }
 
 void loop() 
@@ -15,6 +16,7 @@ void loop()
   //delay(500);
 
   //generar tono de 523Hz durante 500ms, y detenerlo durante 500ms.
-  tone(pinBuzzer, 523, 25);
+  digitalWrite(pinBuzzer,HIGH);
   delay(500);
+  digitalWrite(pinBuzzer,LOW);
 }

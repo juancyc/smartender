@@ -1,10 +1,10 @@
 Paso a paso para integrar sensores y actuadores
 
-1)Implementar el sensor DHT 11 y hacer que el motor se mueva según la temperatura y humedad.
-2)Implementar el sensor LDR y aplicarlo también para determinar el movimiento del motor.
-3)Implementar también el sensor bmp 180 y aplicarlo para determinar el movimiento del motor.
-4)Implementar el buzzer cuando el motor arranque.
-5)Implementar el display I2C mostrando las lecturas de los sensores y cuando el motor comience a rotar.
-6)Implementar las tiras de led RGB en las sogas del tender para que varíe el color según la temperatura
-7)Implementar el motor y el puente H.
-8)Implementar el módulo ESP8266 para que el embebido pueda comunicarse a través de la red.
+1)Encender y apagar un color del led.
+2)Medir el conversor analogico y hacerlo titilar si esta oscuro a una velocidad y si no a otra.
+2 bis) linkear la intensidad de la luz con el pwm
+3)Implementar el puente H en un solo sentido y pwm 
+4)Unir la temperatura (dht11) (entre 20 y 30) con el led o el motor
+5)Mostrar temperatura en numeros en el display.
+6)Hacer andar el bmp280.
+7)Implementar el modulo ESP8266

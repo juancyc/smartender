@@ -1,8 +1,8 @@
 Paso a paso para integrar sensores y actuadores
 
 1)Implementar el sensor DHT 11 y hacer que el motor se mueva según la temperatura y humedad.
-2)Implementar también el sensor bmp 180 y aplicarlo para determinar el movimiento del motor.
-3)Implementar el sensor LDR y aplicarlo también para determinar el movimiento del motor.
+2)Implementar el sensor LDR y aplicarlo también para determinar el movimiento del motor.
+3)Implementar también el sensor bmp 180 y aplicarlo para determinar el movimiento del motor.
 4)Implementar el buzzer cuando el motor arranque.
 5)Implementar el display I2C mostrando las lecturas de los sensores y cuando el motor comience a rotar.
 6)Implementar las tiras de led RGB en las sogas del tender para que varíe el color según la temperatura

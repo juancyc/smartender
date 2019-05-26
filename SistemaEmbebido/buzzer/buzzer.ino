@@ -1,4 +1,4 @@
-const int pinBuzzer = 9;
+const int pinBuzzer = 11;
 
 void setup() 
 {
@@ -7,16 +7,16 @@ void setup()
 
 void loop() 
 {
-  //generar tono de 440Hz durante 1000 ms
-  /*tone(pinBuzzer, 550);
-  delay(1000);
-  */
-  //detener tono durante 500ms  
-  //noTone(pinBuzzer);
-  //delay(500);
+ digitalWrite(pinBuzzer,HIGH);
 
-  //generar tono de 523Hz durante 500ms, y detenerlo durante 500ms.
-  digitalWrite(pinBuzzer,HIGH);
-  delay(500);
-  digitalWrite(pinBuzzer,LOW);
+ delay(1000);
+
+ digitalWrite(pinBuzzer,LOW);
+
+ delay(1000);
+  /*tone(pinBuzzer, 39);
+  delay(1000);
+  tone(pinBuzzer,0);
+  delay(2000);
+*/
 }

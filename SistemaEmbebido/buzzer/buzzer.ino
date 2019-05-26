@@ -4,7 +4,7 @@ void setup()
 {
   pinMode(pinBuzzer,OUTPUT);
 }
-
+  
 void loop() 
 {
  digitalWrite(pinBuzzer,HIGH);

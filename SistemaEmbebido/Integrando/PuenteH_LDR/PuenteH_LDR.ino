@@ -1,6 +1,6 @@
 int m1Izq = 4;
 int m1Der = 5;
-int sentido = 0; //0 es no hay lu mono
+int secando = 0; //0 es no hay lu mono
 const int pinbuzzer = 11;
 unsigned long previousMillis = 0;
 const long interval = 1000;     
@@ -18,42 +18,64 @@ void loop() {
 
  unsigned long currentMillis = millis();
    if (currentMillis - previousMillis >= interval) {
-    // save the last time you blinked the LED
     previousMillis = currentMillis;
     Serial.println("Entro");
  if(digitalRead(12)==HIGH ){
   Serial.println("No hay lu");
 
   //no hay lu
-  if(sentido != 0){
+  if(secando != 0){
     Serial.println("Escondo");
-  digitalWrite(m1Der,LOW);
-  digitalWrite(m1Izq,HIGH);
-  digitalWrite(pinbuzzer,LOW);
-  delay(500);
+    digitalWrite(pinbuzzer,LOW);
+    moverMotor(0);
   digitalWrite(pinbuzzer,HIGH);
-    digitalWrite(m1Der,LOW);
-  digitalWrite(m1Izq,LOW);
-  sentido = 0;
+  secando = 0;
   }
  }
  else{
   Serial.println("Hay Lu");
-  if(sentido == 0){
+  if(secando == 0){
     Serial.println("Muestro");
-    digitalWrite(m1Der,HIGH);
-    digitalWrite(m1Izq,LOW);
     digitalWrite(pinbuzzer,LOW);
-      delay(500);
-      digitalWrite(pinbuzzer,HIGH);
-    digitalWrite(m1Der,LOW);
-  digitalWrite(m1Izq,LOW);
+    moverMotor(1);
+    digitalWrite(pinbuzzer,HIGH);
     
-    sentido =1; 
+    secando = 1; 
   }
   //hay lu
   
  }
    }
-  delay(1000);
+  //delay(1000);
+}
+/**
+ * Cuando le mando un 0 lo escondo, cuando le mando un 1 muestro
+ */
+void moverMotor(int direccion){
+  int millisAnterior = 0;
+  int tiempo = 500;
+  int der, izq;
+  if(direccion == 0){
+  der = HIGH;
+  izq = LOW;
+  }
+  else{
+    der=LOW;
+    izq = HIGH;
+  }
+//digitalWrite(m1Der,der);
+//digitalWrite(m1Izq,izq);
+/**
+ * delay(tiempo);
+ * digitalWrite(m1Der,LOW);
+digitalWrite(m1Izq,LOW);
+ * 
+ */
+//unsigned long millisActual = millis();
+while(millis()  < tiempo){
+    digitalWrite(m1Der,der);
+    digitalWrite(m1Izq,izq);
+}
+    digitalWrite(m1Der,LOW);
+    digitalWrite(m1Izq,LOW);
 }

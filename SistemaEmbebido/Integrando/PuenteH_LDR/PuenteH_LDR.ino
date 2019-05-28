@@ -7,7 +7,9 @@ int secando = 0; //0 es no hay lu mono
 const int pinbuzzer = 11;
 const int pinLDR = 12;
 const int DHTPin = 8;
-
+const int pinRojo = 11;
+const int pinVerde = 10;
+const int pinAzul =9;
 unsigned long previousMillis = 0;
 const long interval = 1000;
 DHT dht(DHTPin,DHTTYPE); 
@@ -19,16 +21,18 @@ void setup() {
   pinMode(m1Izq,OUTPUT);
   pinMode(m1Der,OUTPUT);
   digitalWrite(pinbuzzer,HIGH);
-  
+  secuenciaInicio();  
 }
 
 void loop() {
+  
 int dhtDisp = leerDHT();
  unsigned long currentMillis = millis();
    if (currentMillis - previousMillis >= interval) {
     
     previousMillis = currentMillis;
     Serial.println("Entro");
+ cambiarLeds(temp);
  if(nohayLu()==HIGH && temp >25 & hum<48){
   Serial.println("No hay lu");
 
@@ -108,4 +112,44 @@ int leerDHT(){
     return LOW;
   }
   return HIGH; 
+}
+
+void cambiarLeds(int t){
+  
+  if(t>28){
+    digitalWrite(pinRojo,255);
+    return;
+  }
+  if(t>25){
+    digitalWrite(pinRojo,127);
+    digitalWrite(pinVerde,255);
+    return;
+  }
+  if(t>18){
+    digitalWrite(pinVerde,127);
+    digitalWrite(pinAzul,255);
+    return;
+  }
+
+  if(t>10){
+    digitalWrite(pinAzul,255);
+    return;
+  }
+  digitalWrite(pinRojo,255);
+  digitalWrite(pinVerde,255);
+  digitalWrite(pinAzul,255);
+  
+}
+
+void secuenciaInicio(){
+digitalWrite(11,255);
+delay(500);
+digitalWrite(10,255);
+delay(500);
+digitalWrite(9,0);
+delay(500);
+digitalWrite(11,0);
+digitalWrite(10,0);
+digitalWrite(9,0);
+delay(500);
 }

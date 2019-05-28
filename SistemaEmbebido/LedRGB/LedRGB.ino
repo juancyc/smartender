@@ -16,13 +16,13 @@ void loop() {
 
     if (encendido == LOW) {
       encendido = HIGH;
-      analogWrite(9,205);
-      analogWrite(10,155);
-      analogWrite(11,72);
+      //analogWrite(9,205);
+      analogWrite(10,180);
+      analogWrite(11,15);
 
     } else {
       encendido = LOW;
-      analogWrite(9,20);
+      //analogWrite(9,20);
       analogWrite(10,255);
       analogWrite(11,255);
     }

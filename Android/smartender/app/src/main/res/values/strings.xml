@@ -3,4 +3,7 @@
     <string name="agregar">Agregar</string>
     <string name="modificar">Modificar</string>
     <string name="eliminar">Eliminar</string>
+    <string name="fecha">Fecha</string>
+    <string name="hora">Hora</string>
+    <string name="descripcion">Descripcion</string>
 </resources>

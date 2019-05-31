@@ -9,7 +9,6 @@
     android:textSize="20dp"
     android:focusable="false"
     android:layout_gravity="center"
-    android:background="@drawable/my_selector"
     android:id="@+id/text_view"
     >
 

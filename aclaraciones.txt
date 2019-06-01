@@ -1,0 +1,13 @@
+usar una variable global tiempo y millis 
+en mover motor voy a tener que fijarme al principio si tengo un movimiento en transcurso. si pasa el tiempo de movimiento lo dejo quieto
+si no inicio el movimiento.
+Fin de carrera
+
+eProm implementar cola
+
+autonomia
+
+tomar valores promedios para el dht
+
+
+

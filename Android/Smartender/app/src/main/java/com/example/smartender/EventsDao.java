@@ -19,7 +19,7 @@ public class EventsDao {
             " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+ FECHA +
             " TEXT, " + HORA +" TEXT, "+ DESCRIPCION +" TEXT)";
 
-    public static final String DELETE_EVENTS_TABLE = "DROP TABLE IF EXISTS "+TABLE_NAME;
+    public static final String DELETE_TABLE = "DROP TABLE IF EXISTS "+TABLE_NAME;
 
     public static boolean AddEvent(DbHandler dbHandler,Events event){
         SQLiteDatabase database = dbHandler.getWritableDatabase();

@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
-INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
-INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
-INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
+ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
 MERGED from [com.android.support:design:28.0.0] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\2985c1c0bba304a2f5ec4af054ec936b\AndroidManifest.xml:17:1-24:12
 MERGED from [com.android.support:appcompat-v7:28.0.0] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\f9dd5aa9ae8b7c20ca013448a21d61dd\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\85f603a0078fd9339138ce65c5285053\AndroidManifest.xml:2:1-11:12
@@ -37,25 +37,25 @@ MERGED from [com.android.support:interpolator:28.0.0] C:\Users\ger\.gradle\cache
 MERGED from [android.arch.lifecycle:livedata:1.1.1] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\5197d56dec535b411d0487f6a948093b\AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:livedata-core:1.1.1] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\72536c965e943a10580db30a6a9890ef\AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.core:runtime:1.1.1] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\4b11211607e4ef387fceb7722e55062a\AndroidManifest.xml:17:1-22:12
-INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
-INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
-INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
+INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
 	package
 		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:3:5-37
 		INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
+		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
 		INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml
 	android:versionCode
 		INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-25:12
+		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:1-24:12
 		INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:2:11-69
 application
-ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:5:5-23:19
+ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:5:5-22:19
 MERGED from [com.android.support:design:28.0.0] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\2985c1c0bba304a2f5ec4af054ec936b\AndroidManifest.xml:22:5-20
 MERGED from [com.android.support:design:28.0.0] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\2985c1c0bba304a2f5ec4af054ec936b\AndroidManifest.xml:22:5-20
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\ger\.gradle\caches\transforms-2\files-2.1\85f603a0078fd9339138ce65c5285053\AndroidManifest.xml:9:5-20
@@ -78,28 +78,24 @@ MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\ger\.gradl
 		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:6:9-35
 	android:theme
 		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:11:9-40
-activity#com.example.smartender.EventInfo
-ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:12:9-56
-	android:name
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:12:19-44
 activity#com.example.smartender.MainActivity
-ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:13:9-22:20
+ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:12:9-21:20
 	android:label
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:15:13-39
+		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:14:13-39
 	android:theme
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:16:13-56
+		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:15:13-56
 	android:name
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:14:13-41
+		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:13:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:17:13-21:29
+ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:16:13-20:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:18:17-69
+ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:17:17-69
 	android:name
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:18:25-66
+		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:17:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:20:17-77
+ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:19:17-77
 	android:name
-		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:20:27-74
+		ADDED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml:19:27-74
 uses-sdk
 INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\ger\Desktop\Smartender\app\src\main\AndroidManifest.xml

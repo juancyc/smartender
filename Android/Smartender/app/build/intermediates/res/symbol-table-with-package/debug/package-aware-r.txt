@@ -1010,6 +1010,7 @@ drawable design_ic_visibility
 drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
+drawable event_icon
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_menu_camera
@@ -1037,8 +1038,10 @@ drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
 drawable side_nav_bar
+drawable tender
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
+drawable weather
 id ALT
 id CTRL
 id FUNCTION
@@ -1076,9 +1079,9 @@ id barrier
 id beginning
 id blocking
 id bottom
-id btnAgregar
 id btnFecha
 id btnHora
+id btnfabAgregar
 id buttonPanel
 id cancel_action
 id center
@@ -1093,6 +1096,7 @@ id collapseActionView
 id container
 id content
 id contentPanel
+id content_main
 id coordinator
 id custom
 id customPanel
@@ -1118,7 +1122,6 @@ id enterAlwaysCollapsed
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
-id fab
 id fill
 id fill_horizontal
 id fill_vertical
@@ -1145,9 +1148,9 @@ id largeLabel
 id left
 id line1
 id line3
-id listEventInfo
 id listMode
 id list_item
+id listviewEvents
 id masked
 id media_actions
 id message
@@ -1156,7 +1159,7 @@ id mini
 id mtrl_child_content_container
 id mtrl_internal_children_alpha_tag
 id multiply
-id nav_gallery
+id nav_event
 id nav_home
 id nav_send
 id nav_share
@@ -1313,7 +1316,6 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
-layout activity_event_info
 layout activity_main
 layout app_bar_main
 layout content_main
@@ -1332,6 +1334,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_password_icon
 layout event_input_data
+layout fragment_event
 layout list_view
 layout mtrl_layout_snackbar
 layout mtrl_layout_snackbar_include
@@ -1407,6 +1410,7 @@ string character_counter_content_description
 string character_counter_pattern
 string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
+string hello_blank_fragment
 string hide_bottom_view_on_scroll_behavior
 string menu_gallery
 string menu_home
@@ -1414,6 +1418,7 @@ string menu_send
 string menu_share
 string menu_slideshow
 string menu_tools
+string mis_eventos
 string mtrl_chip_close_icon_content_description
 string nav_header_desc
 string nav_header_subtitle

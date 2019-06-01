@@ -5,8 +5,8 @@ import java.util.Objects;
 public class Events {
 
     private Integer id;
-    private String date;       //Es conveniente cambiar por un objeto date
-    private String hour;       //Es conveniente cambiar por un objeto date
+    private String date;        //Es conveniente cambiar por un objeto date
+    private String hour;        //Es conveniente cambiar por un objeto date
     private String description;
 
     public Events(Integer id, String date, String hour, String description){

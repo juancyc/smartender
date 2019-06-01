@@ -16,12 +16,14 @@ public class DbHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(EventsDao.CREATE_EVENTS_TABLE);
+        db.execSQL(TenderDao.CREATE_TABLE);
         //Agregar el resto de tablas
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(EventsDao.DELETE_EVENTS_TABLE);
+        db.execSQL(EventsDao.DELETE_TABLE);
+        db.execSQL(TenderDao.DELETE_TABLE);
         //Agregar el resto de tablas
         onCreate(db);
     }

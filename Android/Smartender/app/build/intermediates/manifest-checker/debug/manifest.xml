@@ -18,7 +18,6 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/AppTheme" >
-        <activity android:name="com.example.smartender.EventInfo" />
         <activity
             android:name="com.example.smartender.MainActivity"
             android:label="Smartender"

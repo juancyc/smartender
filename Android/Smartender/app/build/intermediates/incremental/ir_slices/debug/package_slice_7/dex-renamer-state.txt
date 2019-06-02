@@ -1,4 +1,0 @@
-#Sat Jun 01 15:06:24 ART 2019
-base.0=C\:\\Users\\ger\\Desktop\\Smartender\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\7
-path.0=classes.dex
-renamed.0=classes.dex

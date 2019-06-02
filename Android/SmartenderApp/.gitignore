@@ -1,0 +1,9 @@
+package com.example.smartender;
+
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
+
+public class EventsDao {
+
+    private static fi

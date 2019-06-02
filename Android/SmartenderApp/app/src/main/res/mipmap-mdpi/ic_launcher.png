@@ -1,0 +1,57 @@
+package com.example.smartender;
+
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.view.View;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TimePicker;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Button btnAgregar, btnModificar, btnEliminar;
+    private ListView listCalendarInfo;
+    private ArrayList<Events> calendarlist;
+    private ArrayAdapter<Events> adapter;
+    private int selectedItem;
+    private DbHandler conn = new DbHandler(this,"db_Smartender",null,1);
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_calendar_info);
+        calendarlist = new ArrayList<Events>();
+        adapter = new ArrayAdapter<Events>(this,R.layout.list_view,this.calendarlist);
+
+        btnAgregar = (Button)findViewById(R.id.btnAgregar);
+        listCalendarInfo = (ListView)findViewById(R.id.listCalendarInfo);
+        listCalendarInfo.setAdapter(adapter);
+        listCalendarInfo.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Events data = calendarlist.get(position);
+                createButtonsDialog(data);
+                return true;
+            }
+        });
+
+        btnAgregar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createCalendarInputDataDialog(null);
+            }
+        });
+
+
+    }

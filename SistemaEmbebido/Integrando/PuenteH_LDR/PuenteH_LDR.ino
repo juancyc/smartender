@@ -1,18 +1,20 @@
 #include <DHT.h>
 
+#define DHTPIN 8
 #define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
 int m1Izq = 4;
 int m1Der = 5;
 int secando = 0; //0 es no hay lu mono
-const int pinbuzzer = 11;
+const int pinbuzzer = 7;
 const int pinLDR = 12;
-const int DHTPin = 8;
-const int pinRojo = 11;
+const int pinRojo = 9;
 const int pinVerde = 10;
-const int pinAzul =9;
+const int pinAzul =11;
 unsigned long previousMillis = 0;
-const long interval = 1000;
-DHT dht(DHTPin,DHTTYPE); 
+const long interval = 5000;
+
 float hum,temp;    
 void setup() {
   Serial.begin(9600);
@@ -26,44 +28,75 @@ void setup() {
 
 void loop() {
   
-int dhtDisp = leerDHT();
+
  unsigned long currentMillis = millis();
    if (currentMillis - previousMillis >= interval) {
-    
-    previousMillis = currentMillis;
-    Serial.println("Entro");
- cambiarLeds(temp);
- if(nohayLu()==HIGH && temp >25 & hum<48){
-  Serial.println("No hay lu");
-
-  //no hay lu
-  if(secando != 0){
-    Serial.println("Escondo");
-    digitalWrite(pinbuzzer,LOW);
-    moverMotor(0);
-  digitalWrite(pinbuzzer,HIGH);
-  secando = 0;
-  }
- }
- else{
-  Serial.println("Hay Lu");
-  if(secando == 0){
-    Serial.println("Muestro");
-    digitalWrite(pinbuzzer,LOW);
-    moverMotor(1);
+    digitalWrite(m1Der,LOW);
+    digitalWrite(m1Izq,LOW);
     digitalWrite(pinbuzzer,HIGH);
+    previousMillis = currentMillis;
+    //int dhtDisp = leerDHT();
+    hum = dht.readHumidity();
+    temp = dht.readTemperature();
+    Serial.print("Humedad: ");
+    Serial.println(hum);
+    Serial.print("Temperatura: ");
+    Serial.println(temp);
+
     
-    secando = 1; 
+    cambiarLeds(temp);
+    if(nohayLu()==HIGH){
+          Serial.println("No hay lu");
+          //no hay lu
+          if(secando != 0){
+              Serial.println("Escondo");
+              digitalWrite(pinbuzzer,LOW);
+              //moverMotorBloq(0);
+              digitalWrite(m1Der,HIGH);
+              digitalWrite(m1Izq,LOW);
+              secando = 0;
+            }
   }
+ else{
+      Serial.println("Hay Lu");
+      if(secando == 0){
+          Serial.println("Muestro");
+          digitalWrite(pinbuzzer,LOW);
+          //moverMotorBloq(1);
+        digitalWrite(m1Der,LOW);
+        digitalWrite(m1Izq,HIGH);
+          
+          secando = 1; 
+      }
   //hay lu
-  
- }
+  }
    }
   //delay(1000);
 }
 /**
  * Cuando le mando un 0 lo escondo, cuando le mando un 1 muestro
  */
+void moverMotorBloq(int direccion){
+  int tiempo =500;
+  int der, izq;
+  if(direccion == 0){
+  digitalWrite(m1Der,HIGH);
+  digitalWrite(m1Izq,LOW);
+  delay(tiempo);
+    digitalWrite(m1Der,LOW);
+  digitalWrite(m1Izq,LOW);
+  Serial.println("Escondo el tender desde aca");
+  }
+  else{
+    Serial.println("Muestro el tender desde aca");
+  digitalWrite(m1Der,HIGH);
+  digitalWrite(m1Izq,LOW);
+  delay(tiempo);
+    digitalWrite(m1Der,LOW);
+  digitalWrite(m1Izq,LOW);
+  }
+
+}
 void moverMotor(int direccion){
   int millisAnterior = 0;
   int tiempo = 500;
@@ -105,6 +138,7 @@ return  digitalRead(pinLDR);
 int leerDHT(){
     hum = dht.readHumidity();
     temp = dht.readTemperature();
+    
     
   if (isnan(hum) || isnan(temp)) {
     

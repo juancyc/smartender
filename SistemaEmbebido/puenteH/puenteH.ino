@@ -8,7 +8,7 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(m1Der,127);
+  digitalWrite(m1Der,HIGH);
   digitalWrite(m1Izq,LOW);
   delay(1000);
   digitalWrite(m1Der,LOW);
@@ -19,8 +19,5 @@ void loop() {
   delay(1000);
   digitalWrite(m1Der,LOW);
   digitalWrite(m1Izq,LOW);
-  delay(1000);
 
-  
-  
 }

@@ -29,16 +29,17 @@ void setup() {
 }
 
 void loop() {
+    Serial.println("Hola");
     Serial.print(F("Temperature = "));
     Serial.print(bmp.readTemperature());
     Serial.println(" *C");
 
     Serial.print(F("Pressure = "));
-    Serial.print(bmp.readPressure());
-    Serial.println(" Pa");
+    Serial.print((bmp.readPressure())/100);
+    Serial.println(" hPa");
 
     Serial.print(F("Approx altitude = "));
-    Serial.print(bmp.readAltitude(1024)); /* Adjusted to local forecast! */
+    Serial.print(bmp.readAltitude(1012)); /* Adjusted to local forecast! */
     Serial.println(" m");
 
     Serial.println();

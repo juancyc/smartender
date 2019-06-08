@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.telecom.GatewayInfo;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -152,17 +153,23 @@ public class MainFragment extends Fragment implements LocationListener {
         super.onResume();
         if (ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
-                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
                 createPermisionDialog();
             }else {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
             }
         }else{
-            double lat = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
-            double lon = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
-            getLocationName(lat,lon);
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            try{
+                double lat = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
+                double lon = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
+                getLocationName(lat,lon);
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            }catch (Exception e){
+                Location loc = new Location(LocationManager.GPS_PROVIDER);
+                getLocationName(loc.getLatitude(),loc.getLongitude());
+            }
+
         }
     }
 
@@ -274,6 +281,8 @@ public class MainFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+
+
     }
 
     @Override

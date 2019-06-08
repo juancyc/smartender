@@ -1039,6 +1039,7 @@ drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
 drawable side_nav_bar
+drawable smartender_logo
 drawable tender
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
@@ -1325,6 +1326,7 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout activity_launcher
 layout activity_main
 layout app_bar_main
 layout content_main

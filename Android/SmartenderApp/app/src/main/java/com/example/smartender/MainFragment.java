@@ -31,6 +31,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -152,12 +153,13 @@ public class MainFragment extends Fragment implements LocationListener {
     public void onResume() {
         super.onResume();
         if (ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
+
+            /*if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
                 createPermisionDialog();
             }else {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
-            }
+            }*/
         }else{
             try{
                 double lat = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
@@ -246,6 +248,8 @@ public class MainFragment extends Fragment implements LocationListener {
                     String temp = String.valueOf(main_objet.getDouble("temp"));
                     String hum = String.valueOf(main_objet.getInt("humidity"));
                     String descripcion = object.getString("description");
+                    String icon = object.getString("icon");
+                    String iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
                     double temp_int = Double.parseDouble(temp);
                     double centi = (temp_int -32)/1.8000;
                     centi = Math.round(centi);
@@ -254,6 +258,7 @@ public class MainFragment extends Fragment implements LocationListener {
                     textViewTemperature.setText(String.valueOf(i)+" ℃");
                     textViewHumidity.setText(hum+"%");
                     textViewDescription.setText(descripcion);
+                    Picasso.with(currentcontex).load(iconUrl).into(imageWeather);
                 } catch (JSONException e) {
                     Toast.makeText(currentcontex,"No se puede obtener datos del clima",Toast.LENGTH_SHORT);
                 }

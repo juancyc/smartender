@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Smartender.iml" filepath="$PROJECT_DIR$/Smartender.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SmartenderApp.iml" filepath="$PROJECT_DIR$/SmartenderApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

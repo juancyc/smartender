@@ -1244,9 +1244,12 @@ id textSpacerNoButtons
 id textSpacerNoTitle
 id textStart
 id textView
+id textView1
 id textView2
+id textViewCity
 id textViewDateHour
 id textViewDescripcion
+id textViewHumedad
 id textViewTemperature
 id text_input_password_toggle
 id text_view

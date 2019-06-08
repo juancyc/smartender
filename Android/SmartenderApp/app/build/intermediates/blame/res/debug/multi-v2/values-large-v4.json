@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\ger\\Desktop\\Smartender\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-large-v4\\values-large-v4.xml",
+            "outputFile": "C:\\Users\\ger\\Desktop\\Git\\smartender\\Android\\SmartenderApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-large-v4\\values-large-v4.xml",
             "map": [
                 {
                     "source": "C:\\Users\\ger\\.gradle\\caches\\transforms-2\\files-2.1\\2985c1c0bba304a2f5ec4af054ec936b\\res\\values-large-v4\\values-large-v4.xml",

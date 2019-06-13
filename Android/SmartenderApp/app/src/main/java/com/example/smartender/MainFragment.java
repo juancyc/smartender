@@ -67,6 +67,7 @@ public class MainFragment extends Fragment implements LocationListener {
     private TextView textViewDateHour, textViewTemperature, textViewCity, textViewHumidity, textViewDescription;
     private ImageView imageWeather;
     private Context currentcontex;
+    private WeatherHandler weatherHandler;
     private View vist;
 
 
@@ -152,54 +153,23 @@ public class MainFragment extends Fragment implements LocationListener {
     @Override
     public void onResume() {
         super.onResume();
-        if (ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            /*if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
-                createPermisionDialog();
-            }else {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
-            }*/
-        }else{
             try{
+                weatherHandler = new WeatherHandler(currentcontex);
                 double lat = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
                 double lon = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
                 getLocationName(lat,lon);
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             }catch (Exception e){
-                Location loc = new Location(LocationManager.GPS_PROVIDER);
+                Location loc = new Location(LocationManager.NETWORK_PROVIDER);
                 getLocationName(loc.getLatitude(),loc.getLongitude());
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             }
-
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        /*if(requestCode == 100){
-            if(grantResults.length == 2 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED){
-
-            }
-        }*/
-    }
-
-    private void createPermisionDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(currentcontex);
-        builder.setTitle("Permisos desactivados");
-        builder.setMessage("Debe aceptar los permisos");
-        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
-            }
-        });
-
-        builder.show();
-
     }
 
     private void getLocationName(double latitude, double longitude){
@@ -213,7 +183,7 @@ public class MainFragment extends Fragment implements LocationListener {
                     if(lugar.length() != 0 && !lugar.contains("null")){
                         String aux = Normalizer.normalize(lugar,Normalizer.Form.NFD);
                         aux = aux.replaceAll("[^\\p{ASCII}]", "");
-                        setWeathe(aux,lugar);
+                        setWeather(aux,lugar);
                     }else {
                         textViewCity.setText("Ubicacion desconocida");
                         textViewTemperature.setText("---");
@@ -234,7 +204,7 @@ public class MainFragment extends Fragment implements LocationListener {
         }
     }
 
-    private void setWeathe(String loc, final String city_name){
+    private void setWeather(String loc, final String city_name){
         String url = "http://api.openweathermap.org/data/2.5/weather?q=";
         url += loc.replace(" ", "%20");
         url += "&appid=4c95f217ec82fde1928e70729b44c12a&units=Imperial";
@@ -286,7 +256,6 @@ public class MainFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-
 
     }
 

@@ -48,6 +48,7 @@ public class EventFragment extends Fragment {
     private DbHandler conn;
     private View vist;
     private Context currentcontex;
+    private WeatherHandler whandler;
 
     private OnFragmentInteractionListener mListener;
 
@@ -89,6 +90,7 @@ public class EventFragment extends Fragment {
         currentcontex =  inflater.getContext();
         vist = inflater.inflate(R.layout.fragment_event, container, false);
         conn = new DbHandler(currentcontex,"db_Smartender",null,1);
+        whandler = new WeatherHandler(currentcontex);
         eventlist = EventsDao.GetEventData(conn);
         adapter = new ArrayAdapter<Events>(currentcontex,R.layout.list_view,this.eventlist);
 

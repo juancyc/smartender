@@ -105,48 +105,24 @@ public class EventsDao {
             event = new Events();
             event.setId(cursor.getInt(0));
             String date = cursor.getString(1);
-            event.setDate(date);
-            event.setHour(cursor.getString(2));
-            event.setDescription(cursor.getString(3));
-            weatherDescription = "";
-            event.setWeatherdescription(getDayWeather(whandler,event.getDate()));
-            if(validateDate(date))
+            if(validateDate(date)){
+                event.setDate(date);
+                event.setHour(cursor.getString(2));
+                event.setDescription(cursor.getString(3));
+                getDayWeather(whandler,event.getDate());
+                event.setWeatherdescription(getWeatherDescription());
                 eventlist.add(event);
+            }
         }
 
         return eventlist;
     }
 
-    public static boolean validateDate(String date){
-        try {
-            Date date1 = new Date();
-            Date date2=new SimpleDateFormat("dd/MM/yyyy").parse(date);
-            if(date1.compareTo(date2)<=0)
-                return true;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
-        return  false;
-    }
-
-    public static boolean compareDate(String date1,String date2){
-        try {
-            Date d1 = new SimpleDateFormat("dd/MM/yyyy").parse(date1);
-            Date d2 = new SimpleDateFormat("dd/MM/yyyy").parse(date2);
-            if(d1.compareTo(d2) == 0)
-                return true;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return  false;
-    }
-
-    public static String getDayWeather(WeatherHandler weatherHandler, final String eventdate){
+    public static void getDayWeather(WeatherHandler weatherHandler, final String eventdate){
         final String city = weatherHandler.getWeatherDaysData().replace(" ", "%20");;
         if(city.length() == 0)
-            return "No hay datos del clima";
+            setWeatherDescription("No hay datos del clima");
         final String url = "http://api.openweathermap.org/data/2.5/forecast?q=";
         final String key = "&appid=4c95f217ec82fde1928e70729b44c12a&units=Imperial&cnt=5";
         final String url_connection = url + city + key;
@@ -160,10 +136,11 @@ public class EventsDao {
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                         long dt = jDayForecast.getLong("dt") *1000;
                         String date = sdf.format(new Date(dt));
-                        if(compareDate(eventdate,date)){
+                        if(date.equals(eventdate)){
                             JSONArray jWeatherArr = jDayForecast.getJSONArray("weather");
                             JSONObject jWeatherObj = jWeatherArr.getJSONObject(0);
-                            weatherDescription = jWeatherObj.getString("description");
+                            String desc = jWeatherObj.getString("description");
+                            setWeatherDescription(desc);
                             break;
                         }
                     }
@@ -183,10 +160,27 @@ public class EventsDao {
         RequestQueue queue = Volley.newRequestQueue(weatherHandler.getContext());
         queue.add(jObj);
 
-        Log.i("EVENTO","des 2: "+ weatherDescription );
 
-        if(weatherDescription.length() != 0)
-            return weatherDescription;
-        return "No hay datos del clima";
+    }
+
+    public static boolean validateDate(String date){
+        try {
+            Date date1 = new Date();
+            Date date2=new SimpleDateFormat("dd/MM/yyyy").parse(date);
+            if(date1.compareTo(date2)<=0)
+                return true;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return  false;
+    }
+
+    public static String getWeatherDescription() {
+        return weatherDescription;
+    }
+
+    public static void setWeatherDescription(String weatherDescription) {
+        EventsDao.weatherDescription = weatherDescription;
     }
 }

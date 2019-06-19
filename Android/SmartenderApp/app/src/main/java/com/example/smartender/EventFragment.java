@@ -254,7 +254,7 @@ public class EventFragment extends Fragment {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(currentcontex, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        editTextFecha.setText(dayOfMonth +"/"+(month+1)+"/"+year);
+                        editTextFecha.setText(checkFormatNumber(dayOfMonth) +"/"+checkFormatNumber((month+1))+"/"+year);
                         if(eventData != null)
                             eventData.setDate(editTextFecha.getText().toString());
                     }
@@ -276,7 +276,7 @@ public class EventFragment extends Fragment {
                 TimePickerDialog timePickerDialog = new TimePickerDialog(currentcontex, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        editTextHora.setText(hourOfDay+":"+minute);
+                        editTextHora.setText(hourOfDay+":"+checkFormatNumber(minute));
                         if(eventData != null)
                             eventData.setHour(editTextHora.getText().toString());
                     }
@@ -289,5 +289,10 @@ public class EventFragment extends Fragment {
 
 
         builder.show();
+    }
+
+
+    private String checkFormatNumber(int number){
+        return number <10 ? "0" + String.valueOf(number) :  String.valueOf(number);
     }
 }

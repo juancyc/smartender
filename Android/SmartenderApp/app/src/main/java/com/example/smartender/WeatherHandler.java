@@ -109,4 +109,10 @@ public class WeatherHandler implements LocationListener {
     public Context getContext() {
         return context;
     }
+
+    public static boolean isWheatherOK(int temp,int hum){
+        if(temp >10 || hum <60)
+            return true;
+        return false;
+    }
 }

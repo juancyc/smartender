@@ -1,5 +1,9 @@
 package com.example.smartender;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,15 +17,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         EventFragment.OnFragmentInteractionListener,
         DatosFragment.OnFragmentInteractionListener,
-        MainFragment.OnFragmentInteractionListener {
+        MainFragment.OnFragmentInteractionListener,
+        SensorEventListener {
 
     private DbHandler conn;
     private Toolbar toolbar;
+    private SensorManager shakeSensorManager;
+    private SensorManager proxSensorManager;
+    private float acelVal;
+    private float acelLast;
+    private float shake;
+    public static boolean tenderHidden;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +51,16 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().add(R.id.content_main,fragment).commit();
         navigationView.setNavigationItemSelectedListener(this);
         conn = new DbHandler(this,"db_Smartender",null,1);
+        setTenderHidden(true); // obtener donde se encuentra en verdad
+
+        shakeSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+        shakeSensorManager.registerListener(this, shakeSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        acelVal = SensorManager.GRAVITY_EARTH;
+        acelLast = SensorManager.GRAVITY_EARTH;
+        shake = 0.00f;
+
+        proxSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+        proxSensorManager.registerListener(this, proxSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -115,4 +137,80 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        switch(event.sensor.getType()){
+            case Sensor.TYPE_PROXIMITY: eventAProx(event);break;
+            case Sensor.TYPE_ACCELEROMETER: eventShake(event);break;
+        }
+    }
+
+    public void eventAProx(SensorEvent event){
+        float x = event.values[0];
+        Sensor sensorprox = proxSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        if(x <  sensorprox.getMaximumRange()){
+            //poner led en blando
+            Log.i("SENSORES","NO HAY LUZ");
+        }else{
+            Log.i("SENSORES","HAY LUZ");
+            //ver que clima hay y en eso cambiar los colores de los led
+        }
+
+    }
+
+    public void eventShake(SensorEvent event){
+        if(checkShake(event)){
+            //verificar si estoy conectado al BT
+            if(isTenderHidden()){
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
+                if(currentFragment instanceof MainFragment){
+                    TextView textViewTemp = currentFragment.getView().findViewById(R.id.textViewTemperature);
+                    TextView textViewHumidity = currentFragment.getView().findViewById(R.id.textViewHumedad);
+                    int temp = Integer.parseInt(textViewTemp.getText().toString().split(" ")[0]);
+                    int hum = Integer.parseInt(textViewHumidity.getText().toString().split("%")[0]);
+                    if(WeatherHandler.isWheatherOK(temp,hum)){
+                        //sacar tender al sol
+                        setTenderHidden(false);
+                        Log.i("SENSORES","ESTOY AL SOL AHORA");
+                    }else {
+                        DialogsHandler.createSimpleDialog(this,"Advertencia","Las condiciones climaticas no son buenas para colgar la ropa.");
+                    }
+                }else {
+                    //obtener datos del arduino
+                }
+            }else{
+                //ocultar tender
+                setTenderHidden(true);
+                Log.i("SENSORES","ESTOY OCULTO AHORA");
+            }
+        }
+    }
+
+    public boolean checkShake(SensorEvent event){
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        acelLast=acelVal;
+        acelVal= (float) Math.sqrt((double) (x*x + y*y + z*z));
+        float delta = acelVal-acelLast;
+        shake = shake * 0.9f + delta;
+
+        return shake>12 ? true : false;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    public static boolean isTenderHidden() {
+        return tenderHidden;
+    }
+
+    public static void setTenderHidden(boolean tenderHidden) {
+        MainActivity.tenderHidden = tenderHidden;
+    }
+
 }

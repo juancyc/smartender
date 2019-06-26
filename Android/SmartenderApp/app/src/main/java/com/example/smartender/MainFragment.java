@@ -118,10 +118,7 @@ public class MainFragment extends Fragment implements LocationListener {
         textViewHumidity = vist.findViewById(R.id.textViewHumedad);
         textViewDescription = vist.findViewById(R.id.textViewDescripcion);
         imageWeather = vist.findViewById(R.id.imageWeather);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
-        Date date = new Date();
-        String fecha = dateFormat.format(date);
-        textViewDateHour.setText(fecha);
+
         return vist;
     }
 
@@ -224,11 +221,16 @@ public class MainFragment extends Fragment implements LocationListener {
                     double centi = (temp_int -32)/1.8000;
                     centi = Math.round(centi);
                     int i = (int)centi;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
+                    Date date = new Date();
+                    String fecha = dateFormat.format(date);
+                    textViewDateHour.setText(fecha);
                     textViewCity.setText(city_name);
                     textViewTemperature.setText(String.valueOf(i)+" ℃");
                     textViewHumidity.setText(hum+"%");
                     textViewDescription.setText(descripcion);
                     Picasso.with(currentcontex).load(iconUrl).into(imageWeather);
+                    imageWeather.setVisibility(View.VISIBLE);
                 } catch (JSONException e) {
                     Toast.makeText(currentcontex,"No se puede obtener datos del clima",Toast.LENGTH_SHORT);
                 }
@@ -236,10 +238,15 @@ public class MainFragment extends Fragment implements LocationListener {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
+                Date date = new Date();
+                String fecha = dateFormat.format(date);
+                textViewDateHour.setText(fecha);
                 textViewTemperature.setText("---");
                 textViewHumidity.setText("---");
                 textViewDescription.setText("");
                 textViewCity.setText("Ubicacion desconocida");
+                imageWeather.setVisibility(View.INVISIBLE);
             }
         }
         );

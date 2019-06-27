@@ -13,12 +13,11 @@ public class TenderDao {
     private static final String ID = "id";
     private static final String FECHA = "fecha";
     private static final String HORA = "hora";
-    private static final String TIEMPO = "tiempoTotal";
     private static final String RAZON = "razon";
 
     public static String CREATE_TABLE = "CREATE TABLE "+ TABLE_NAME +
             " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+ FECHA +
-            " TEXT, " + HORA +" TEXT, "+TIEMPO +" TEXT, "+RAZON +" TEXT)";
+            " TEXT, " + HORA +" TEXT, "+RAZON +" TEXT)";
 
     public static final String DELETE_TABLE = "DROP TABLE IF EXISTS "+TABLE_NAME;
 
@@ -27,7 +26,6 @@ public class TenderDao {
         ContentValues values = new ContentValues();
         values.put(FECHA,tender.getDate());
         values.put(HORA,tender.getHour());
-        values.put(TIEMPO,String.valueOf(tender.getTime()));
         values.put(RAZON,tender.getReason());
         //String query = "INSERT INTO "+TABLE_NAME+" ("+FECHA+","+HORA+","+DESCRIPCION+") values ('"+event.getDate()+"','"+event.getHour()+"','"+event.getDescription()+"')";
 
@@ -56,11 +54,10 @@ public class TenderDao {
             tender.setId(cursor.getInt(0));
             tender.setDate(cursor.getString(1));
             tender.setHour(cursor.getString(2));
-            tender.setTime(Double.parseDouble(cursor.getString(3)));
-            tender.setReason(cursor.getString(4));
+            tender.setReason(cursor.getString(3));
             tenderlist.add(tender);
         }
-
+        database.close();
         return tenderlist;
     }
 }

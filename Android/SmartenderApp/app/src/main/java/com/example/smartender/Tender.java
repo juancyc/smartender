@@ -7,14 +7,12 @@ public class Tender {
     private int id;
     private String date;
     private String hour;
-    private double time;
     private String reason;
 
-    public Tender(int id, String date, String hour, double time, String reason) {
+    public Tender(int id, String date, String hour, String reason) {
         this.id = id;
         this.date = date;
         this.hour = hour;
-        this.time = time;
         this.reason = reason;
     }
 
@@ -46,14 +44,6 @@ public class Tender {
         this.hour = hour;
     }
 
-    public double getTime() {
-        return time;
-    }
-
-    public void setTime(double time) {
-        this.time = time;
-    }
-
     public String getReason() {
         return reason;
     }
@@ -68,7 +58,6 @@ public class Tender {
         if (o == null || getClass() != o.getClass()) return false;
         Tender tender = (Tender) o;
         return id == tender.id &&
-                Double.compare(tender.time, time) == 0 &&
                 Objects.equals(date, tender.date) &&
                 Objects.equals(hour, tender.hour) &&
                 Objects.equals(reason, tender.reason);
@@ -76,11 +65,11 @@ public class Tender {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, date, hour, time, reason);
+        return Objects.hash(id, date, hour, reason);
     }
 
     @Override
     public String toString() {
-        return  date+"-"+hour+"-"+time+"-"+reason ;
+        return  date+"-"+hour+"-"+reason ;
     }
 }

@@ -6,9 +6,11 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +22,20 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TimePicker;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -44,6 +59,7 @@ public class EventFragment extends Fragment {
     private FloatingActionButton btnfabAgegar;
     private ListView listEventInfo;
     private ArrayList<Events> eventlist;
+    private ArrayList<Events> auxlist = new ArrayList<Events>();;
     private ArrayAdapter<Events> adapter;
     private DbHandler conn;
     private View vist;
@@ -55,7 +71,6 @@ public class EventFragment extends Fragment {
     public EventFragment() {
         // Required empty public constructor
     }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -92,9 +107,10 @@ public class EventFragment extends Fragment {
         conn = new DbHandler(currentcontex,"db_Smartender",null,1);
         whandler = new WeatherHandler(currentcontex);
         eventlist = EventsDao.GetEventData(conn);
-        adapter = new ArrayAdapter<Events>(currentcontex,R.layout.list_view,this.eventlist);
-
+        WeatherHandler whandler= new WeatherHandler(currentcontex);
         btnfabAgegar = vist.findViewById(R.id.btnfabAgregar);
+        listEventInfo = vist.findViewById(R.id.listviewEvents);
+        adapter = new ArrayAdapter<Events>(currentcontex,R.layout.list_view,this.eventlist);
         listEventInfo = vist.findViewById(R.id.listviewEvents);
         listEventInfo.setAdapter(adapter);
 
@@ -115,6 +131,15 @@ public class EventFragment extends Fragment {
         });
 
         return  vist;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        for (Events evento:eventlist) {
+            getDayWeather(whandler, evento);
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -141,16 +166,6 @@ public class EventFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
@@ -203,9 +218,11 @@ public class EventFragment extends Fragment {
                         data.setDate(editTextFecha.getText().toString());
                         data.setHour(editTextHora.getText().toString());
                         data.setDescription(editTextDescripcion.getText().toString());
+                        data.setWeatherdescription("No hay datos del clima");
                         if(EventsDao.AddEvent(conn,data)){
                             eventlist.add(data);
                             adapter.notifyDataSetChanged();
+                            getDayWeather(whandler, data);
                         }
                         dialog.cancel();
                     }else{
@@ -228,6 +245,7 @@ public class EventFragment extends Fragment {
                         eventlist.remove(index);
                         eventlist.add(index,eventData);
                         adapter.notifyDataSetChanged();
+                        getDayWeather(whandler, eventData);
                     }
                     dialog.cancel();
                 }
@@ -291,8 +309,70 @@ public class EventFragment extends Fragment {
         builder.show();
     }
 
-
-    private String checkFormatNumber(int number){
+    public static String checkFormatNumber(int number){
         return number <10 ? "0" + String.valueOf(number) :  String.valueOf(number);
     }
+
+    public void getDayWeather(WeatherHandler weatherHandler, final Events event){
+        final String city = weatherHandler.getWeatherDaysData().replace(" ", "%20");;
+        if(city.length() == 0){
+            int index = eventlist.indexOf(event);
+            Events ev = event;
+            ev.setWeatherdescription("No hay datos del clima");
+            eventlist.remove(index);
+            eventlist.add(index,ev);
+            adapter.notifyDataSetChanged();
+        }
+        final String url = "http://api.openweathermap.org/data/2.5/forecast?q=";
+        final String key = "&appid=4c95f217ec82fde1928e70729b44c12a&units=Imperial&cnt=5";
+        final String url_connection = url + city + key;
+        JsonObjectRequest jObj = new JsonObjectRequest(Request.Method.GET, url_connection, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray array = response.getJSONArray("list");
+                    for (int i=0; i < array.length(); i++) {
+                        Events ev = event;
+                        JSONObject jDayForecast = array.getJSONObject(i);
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        long dt = jDayForecast.getLong("dt") ;
+                        String date = sdf.format(new Date(dt*1000));
+
+                        Log.i("LISTA","dt: "+dt);
+                        //Log.i("LISTA","fecha: "+event.getDate().toString()+"\n");
+                        if(date.equals(event.getDate().toString())){
+                            JSONArray jWeatherArr = jDayForecast.getJSONArray("weather");
+                            JSONObject jWeatherObj = jWeatherArr.getJSONObject(0);
+                            String desc = jWeatherObj.getString("description");
+                            ev.setWeatherdescription(desc);
+                            int index = eventlist.indexOf(event);
+                            eventlist.remove(index);
+                            eventlist.add(index,ev);
+                            adapter.notifyDataSetChanged();
+                            break;
+                        }else{
+                            ev.setWeatherdescription("No hay datos del clima");
+                            int index = eventlist.indexOf(event);
+                            eventlist.remove(index);
+                            eventlist.add(index,ev);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }
+        );
+        RequestQueue queue = Volley.newRequestQueue(weatherHandler.getContext());
+        queue.add(jObj);
+    }
+
 }

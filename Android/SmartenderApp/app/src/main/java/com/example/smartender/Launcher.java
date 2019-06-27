@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class Launcher extends AppCompatActivity {
 
-    private int DURACION_SPLASH = 6000; // 3 segundos
+    private int DURACION_SPLASH = 4000;
     private boolean flag = false;
 
     @Override
@@ -24,18 +24,56 @@ public class Launcher extends AppCompatActivity {
         // Tenemos una plantilla llamada splash.xml donde mostraremos la información que queramos (logotipo, etc.)
         setContentView(R.layout.activity_launcher);
 
-        if (ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            Log.i("PERMISOS","ENTRE ACCESS_FINE_LOCATION");
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},100);
+        }else {
+            Log.i("PERMISOS","YA TENIA ACCESS_FINE_LOCATION");
+        }
+
+        if (ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            Log.i("PERMISOS","ENTRE ACCESS_COARSE_LOCATION");
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},101);
+        }else {
+            Log.i("PERMISOS","YA TENIA ACCESS_COARSE_LOCATION");
+        }
+
+        if (ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED){
+            Log.i("PERMISOS","ENTRE BLUETOOTH");
+            requestPermissions(new String[]{Manifest.permission.BLUETOOTH},102);
+        }else {
+            Log.i("PERMISOS","YA TENIA BLUETOOTH");
+        }
+
+        if (ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED){
+            Log.i("PERMISOS","ENTRE BLUETOOTH_ADMIN");
+            requestPermissions(new String[]{Manifest.permission.BLUETOOTH_ADMIN},102);
+        }else {
+            Log.i("PERMISOS","YA TENIA BLUETOOTH_ADMIN");
+        }
+
+
+
+        /*if (ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(Launcher.this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED){
+
+            Log.i("PERMISOS","ENTRE 1");
 
             if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                    shouldShowRequestPermissionRationale(Manifest.permission.BLUETOOTH) ||
+                    shouldShowRequestPermissionRationale(Manifest.permission.BLUETOOTH_ADMIN))
+            {
                 createPermisionDialog();
             }else {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.BLUETOOTH,Manifest.permission.BLUETOOTH_ADMIN},100);
             }
         }else{
+            Log.i("PERMISOS"," NO ENTRE 1");
             DURACION_SPLASH = 3000;
-        }
+        }*/
 
         new Handler().postDelayed(new Runnable(){
             @Override
@@ -58,7 +96,7 @@ public class Launcher extends AppCompatActivity {
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.BLUETOOTH,Manifest.permission.BLUETOOTH_ADMIN},100);
                 Intent intent = new Intent(Launcher.this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -72,13 +110,6 @@ public class Launcher extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        /*if(requestCode == 100){
-            if(grantResults.length == 2 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED){
-
-            }
-        }*/
     }
 }
 

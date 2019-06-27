@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().add(R.id.content_main,fragment).commit();
         navigationView.setNavigationItemSelectedListener(this);
         conn = new DbHandler(this,"db_Smartender",null,1);
+
         setTenderHidden(true); // obtener donde se encuentra en verdad
 
         shakeSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
@@ -139,6 +140,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         switch(event.sensor.getType()){
             case Sensor.TYPE_PROXIMITY: eventAProx(event);break;
@@ -167,21 +173,22 @@ public class MainActivity extends AppCompatActivity
                 if(currentFragment instanceof MainFragment){
                     TextView textViewTemp = currentFragment.getView().findViewById(R.id.textViewTemperature);
                     TextView textViewHumidity = currentFragment.getView().findViewById(R.id.textViewHumedad);
-                    int temp = Integer.parseInt(textViewTemp.getText().toString().split(" ")[0]);
-                    int hum = Integer.parseInt(textViewHumidity.getText().toString().split("%")[0]);
-                    if(WeatherHandler.isWheatherOK(temp,hum)){
-                        //sacar tender al sol
-                        setTenderHidden(false);
-                        Log.i("SENSORES","ESTOY AL SOL AHORA");
-                    }else {
-                        DialogsHandler.createSimpleDialog(this,"Advertencia","Las condiciones climaticas no son buenas para colgar la ropa.");
+                    try{
+                        int temp = Integer.parseInt(textViewTemp.getText().toString().split(" ")[0]);
+                        int hum = Integer.parseInt(textViewHumidity.getText().toString().split("%")[0]);
+                        verifyTenderStatus(temp,hum);
+                    }catch (Exception e){
+                        //obtener datos del arduino
+                        //verifyTenderStatus(temp,hum);
                     }
                 }else {
                     //obtener datos del arduino
+                    //verifyTenderStatus(temp,hum);
                 }
             }else{
                 //ocultar tender
                 setTenderHidden(true);
+                addTenderDataToBD("Ocultamiento mediante SHAKE");
                 Log.i("SENSORES","ESTOY OCULTO AHORA");
             }
         }
@@ -200,17 +207,38 @@ public class MainActivity extends AppCompatActivity
         return shake>12 ? true : false;
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
     public static boolean isTenderHidden() {
         return tenderHidden;
     }
 
     public static void setTenderHidden(boolean tenderHidden) {
         MainActivity.tenderHidden = tenderHidden;
+    }
+
+    public void addTenderDataToBD(String Reason){
+        final java.util.Calendar c = java.util.Calendar.getInstance();
+        int day,month,year,hour,minutes;
+        day = c.get(java.util.Calendar.DAY_OF_MONTH);
+        month = c.get(java.util.Calendar.MONTH);
+        year = c.get(java.util.Calendar.YEAR);
+        hour = c.get(java.util.Calendar.HOUR_OF_DAY);
+        minutes = c.get(java.util.Calendar.MINUTE);
+        Tender tender = new Tender();
+        tender.setDate(day+"/"+month+"/"+year);
+        tender.setHour(hour+":"+minutes);
+        tender.setReason(Reason);
+        TenderDao.AddTenderData(conn,tender);
+    }
+
+    public void verifyTenderStatus(int temp,int hum){
+        if(WeatherHandler.isWheatherOK(temp,hum)){
+            //sacar tender al sol
+            setTenderHidden(false);
+            addTenderDataToBD("Salida al sol mediante SHAKE");
+            Log.i("SENSORES","ESTOY AL SOL AHORA");
+        }else {
+            DialogsHandler.createSimpleDialog(this,"Advertencia","Las condiciones climaticas no son buenas para colgar la ropa.");
+        }
     }
 
 }

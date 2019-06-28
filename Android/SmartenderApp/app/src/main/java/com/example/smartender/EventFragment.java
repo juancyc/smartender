@@ -337,9 +337,6 @@ public class EventFragment extends Fragment {
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                         long dt = jDayForecast.getLong("dt") ;
                         String date = sdf.format(new Date(dt*1000));
-
-                        Log.i("LISTA","dt: "+dt);
-                        //Log.i("LISTA","fecha: "+event.getDate().toString()+"\n");
                         if(date.equals(event.getDate().toString())){
                             JSONArray jWeatherArr = jDayForecast.getJSONArray("weather");
                             JSONObject jWeatherObj = jWeatherArr.getJSONObject(0);

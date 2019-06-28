@@ -52,10 +52,7 @@ public class WeatherHandler implements LocationListener {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
                 return getLocationName(lat,lon);
             }catch (Exception e){
-                Location loc = new Location(LocationManager.NETWORK_PROVIDER);
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-                return getLocationName(loc.getLatitude(),loc.getLongitude());
+                return "";
             }
         }
         return "";

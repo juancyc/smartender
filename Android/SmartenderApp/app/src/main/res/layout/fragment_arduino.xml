@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ArduinoFragment" >
+
+    <Button
+        android:id="@+id/btnConexion"
+        android:layout_width="299dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="40dp"
+        android:text="Button" />
+
+    <TextView
+        android:id="@+id/TextViewInfoArduino"
+        android:layout_width="285dp"
+        android:layout_height="445dp"
+        android:layout_above="@+id/btnConexion"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="91dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="107dp"
+        android:text="TextView" />
+
+</RelativeLayout>

@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity
         EventFragment.OnFragmentInteractionListener,
         DatosFragment.OnFragmentInteractionListener,
         MainFragment.OnFragmentInteractionListener,
+        ArduinoFragment.OnFragmentInteractionListener,
         SensorEventListener {
 
     private DbHandler conn;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     public static boolean tenderHidden;
     public static BTHandler btHandler = null;
     public static boolean ArduinoModo;
+    public static boolean isShacking;
 
 
     @Override
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity
         conn = new DbHandler(this,"db_Smartender",null,1);
         setTenderHidden(true); // obtener donde se encuentra en verdad
         setArduinoModo(false);
+        setIsShacking(false);
         btHandler = new BTHandler();
 
         shakeSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
@@ -155,11 +158,9 @@ public class MainActivity extends AppCompatActivity
             selectedFragment = true;
             toolbar.setTitle("Datos Historicos");
         } else if (id == R.id.nav_tools) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            myfragment = new ArduinoFragment();
+            selectedFragment = true;
+            toolbar.setTitle("Datos Smartender");
         }
 
         if(selectedFragment){
@@ -204,6 +205,7 @@ public class MainActivity extends AppCompatActivity
 
     public void eventShake(SensorEvent event){
         if(checkShake(event)){
+            setIsShacking(true);
             if(isArduinoModo()){
                 if(isTenderHidden()){
                     Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
@@ -217,10 +219,12 @@ public class MainActivity extends AppCompatActivity
                         }catch (Exception e){
                             //obtener datos del arduino
                             //verifyTenderStatus(temp,hum);
+                            setIsShacking(false);
                         }
                     }else {
                         //obtener datos del arduino
                         //verifyTenderStatus(temp,hum);
+                        setIsShacking(false);
                     }
                 }else{
                     if(btHandler.btConeccted && btHandler.VerificarEstadoBT()){
@@ -232,33 +236,37 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             }else {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Smartender");
-                builder.setMessage("No se encuentra conectado a Smarteneder.\nDesea conectarlo ?");
-                builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(!btHandler.VerificarEstadoBT()){
-                            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                            startActivityForResult(enableBtIntent, 1);
-                        }else {
-                            dialog.cancel();
-                            tryConnect();
-                        }
-                    }
-                });
-
-                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ArduinoModo = false;
-                        dialog.cancel();
-                    }
-                });
-                builder.show();
-
+                showDialogConnect();
             }
         }
+    }
+
+    public void showDialogConnect(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Smartender");
+        builder.setMessage("No se encuentra conectado a Smarteneder.\nDesea conectarlo ?");
+        builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(!btHandler.VerificarEstadoBT()){
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, 1);
+                }else {
+                    dialog.cancel();
+                    tryConnect();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                setArduinoModo(false);
+                setIsShacking(false);
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
     @Override
@@ -271,17 +279,22 @@ public class MainActivity extends AppCompatActivity
 
     public void tryConnect(){
         if(btHandler.Conectar()){
-            setBtHandler(btHandler);
+            //setBtHandler(btHandler);
             setArduinoModo(true);
+            setIsShacking(false);
             Toast.makeText(this,"Conexion exitosa",Toast.LENGTH_LONG).show();
         }else {
-            MainActivity.setArduinoModo(false);
+            setArduinoModo(false);
+            setIsShacking(false);
             Toast.makeText(this,"No se pudo conectar a Smartender",Toast.LENGTH_LONG).show();
         }
 
     }
 
     public boolean checkShake(SensorEvent event){
+        if(isIsShacking())
+            return false;
+
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
@@ -324,12 +337,15 @@ public class MainActivity extends AppCompatActivity
             setTenderHidden(false);
             addTenderDataToBD("Salida al sol mediante SHAKE");
             Log.i("SENSORES","ESTOY AL SOL AHORA");
+                setIsShacking(false);
             }else {
                 Toast.makeText(this,"No se encuentra conectado a Smartender",Toast.LENGTH_LONG).show();
+                setIsShacking(false);
             }
 
         }else {
             DialogsHandler.createSimpleDialog(this,"Advertencia","Las condiciones climaticas no son buenas para colgar la ropa.");
+            setIsShacking(false);
         }
     }
 
@@ -347,5 +363,13 @@ public class MainActivity extends AppCompatActivity
 
     public static void setArduinoModo(boolean arduinoModo) {
         ArduinoModo = arduinoModo;
+    }
+
+    public static boolean isIsShacking() {
+        return isShacking;
+    }
+
+    public static void setIsShacking(boolean isShacking) {
+        MainActivity.isShacking = isShacking;
     }
 }

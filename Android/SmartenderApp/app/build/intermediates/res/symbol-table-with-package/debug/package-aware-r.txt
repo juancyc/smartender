@@ -1050,6 +1050,7 @@ id FUNCTION
 id META
 id SHIFT
 id SYM
+id TextViewInfoArduino
 id action0
 id action_bar
 id action_bar_activity_content
@@ -1081,6 +1082,7 @@ id barrier
 id beginning
 id blocking
 id bottom
+id btnConexion
 id btnFecha
 id btnHora
 id btnfabAgregar
@@ -1166,8 +1168,6 @@ id multiply
 id nav_datos
 id nav_event
 id nav_home
-id nav_send
-id nav_share
 id nav_tools
 id nav_view
 id navigation_header_container
@@ -1345,6 +1345,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_password_icon
 layout event_input_data
+layout fragment_arduino
 layout fragment_datos
 layout fragment_event
 layout fragment_main

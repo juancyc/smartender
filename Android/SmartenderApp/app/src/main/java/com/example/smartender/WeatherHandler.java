@@ -50,9 +50,17 @@ public class WeatherHandler implements LocationListener {
                 double lon = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,this);
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-                return getLocationName(lat,lon);
+                String name = getLocationName(lat,lon);
+                if(name.length() == 0){
+                    return getLocationName(-34.6699075563091,-58.56386728584767);
+                }
+                return name;
             }catch (Exception e){
-                return "";
+                double lat = -34.6699075563091;
+                double lon = -58.56386728584767;
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+                return getLocationName(lat,lon);
             }
         }
         return "";
@@ -74,7 +82,6 @@ public class WeatherHandler implements LocationListener {
                         return "";
                     }
                 }
-
             }catch (IOException e) {
                 Toast.makeText(context,"No se puede obtener datos del clima",Toast.LENGTH_SHORT);
                 return "";
@@ -108,7 +115,7 @@ public class WeatherHandler implements LocationListener {
     }
 
     public static boolean isWheatherOK(int temp,int hum){
-        if(temp >10 || hum <60)
+        if(temp >10 && hum <60)
             return true;
         return false;
     }

@@ -59,7 +59,6 @@ public class EventFragment extends Fragment {
     private FloatingActionButton btnfabAgegar;
     private ListView listEventInfo;
     private ArrayList<Events> eventlist;
-    private ArrayList<Events> auxlist = new ArrayList<Events>();;
     private ArrayAdapter<Events> adapter;
     private DbHandler conn;
     private View vist;
@@ -136,10 +135,11 @@ public class EventFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        for (Events evento:eventlist) {
-            getDayWeather(whandler, evento);
+        if(!eventlist.isEmpty()){
+            for (Events evento:eventlist) {
+                getDayWeather(whandler, evento);
+            }
         }
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -314,7 +314,7 @@ public class EventFragment extends Fragment {
     }
 
     public void getDayWeather(WeatherHandler weatherHandler, final Events event){
-        final String city = weatherHandler.getWeatherDaysData().replace(" ", "%20");;
+        final String city = weatherHandler.getWeatherDaysData().replace(" ", "%20");
         if(city.length() == 0){
             int index = eventlist.indexOf(event);
             Events ev = event;
@@ -322,54 +322,57 @@ public class EventFragment extends Fragment {
             eventlist.remove(index);
             eventlist.add(index,ev);
             adapter.notifyDataSetChanged();
-        }
-        final String url = "http://api.openweathermap.org/data/2.5/forecast?q=";
-        final String key = "&appid=4c95f217ec82fde1928e70729b44c12a&units=Imperial&cnt=5";
-        final String url_connection = url + city + key;
-        JsonObjectRequest jObj = new JsonObjectRequest(Request.Method.GET, url_connection, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray array = response.getJSONArray("list");
-                    for (int i=0; i < array.length(); i++) {
-                        Events ev = event;
-                        JSONObject jDayForecast = array.getJSONObject(i);
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                        long dt = jDayForecast.getLong("dt") ;
-                        String date = sdf.format(new Date(dt*1000));
-                        if(date.equals(event.getDate().toString())){
-                            JSONArray jWeatherArr = jDayForecast.getJSONArray("weather");
-                            JSONObject jWeatherObj = jWeatherArr.getJSONObject(0);
-                            String desc = jWeatherObj.getString("description");
-                            ev.setWeatherdescription(desc);
-                            int index = eventlist.indexOf(event);
-                            eventlist.remove(index);
-                            eventlist.add(index,ev);
-                            adapter.notifyDataSetChanged();
-                            break;
-                        }else{
-                            ev.setWeatherdescription("No hay datos del clima");
-                            int index = eventlist.indexOf(event);
-                            eventlist.remove(index);
-                            eventlist.add(index,ev);
-                            adapter.notifyDataSetChanged();
+        }else{
+            final String url = "http://api.openweathermap.org/data/2.5/forecast?q=";
+            final String key = "&appid=4c95f217ec82fde1928e70729b44c12a&units=Imperial&cnt=5";
+            final String url_connection = url + city + key;
+            JsonObjectRequest jObj = new JsonObjectRequest(Request.Method.GET, url_connection, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        JSONArray array = response.getJSONArray("list");
+                        for (int i=0; i < array.length(); i++) {
+                            Events ev = event;
+                            JSONObject jDayForecast = array.getJSONObject(i);
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            long dt = jDayForecast.getLong("dt") ;
+                            String date = sdf.format(new Date(dt*1000));
+                            if(date.equals(event.getDate().toString())){
+                                JSONArray jWeatherArr = jDayForecast.getJSONArray("weather");
+                                JSONObject jWeatherObj = jWeatherArr.getJSONObject(0);
+                                String desc = jWeatherObj.getString("description");
+                                ev.setWeatherdescription(desc);
+                                int index = eventlist.indexOf(event);
+                                eventlist.remove(index);
+                                eventlist.add(index,ev);
+                                adapter.notifyDataSetChanged();
+                                break;
+                            }else{
+                                ev.setWeatherdescription("No hay datos del clima");
+                                int index = eventlist.indexOf(event);
+                                eventlist.remove(index);
+                                eventlist.add(index,ev);
+                                adapter.notifyDataSetChanged();
+                            }
                         }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
 
+                }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+            );
+            RequestQueue queue = Volley.newRequestQueue(weatherHandler.getContext());
+            queue.add(jObj);
 
-            }
         }
-        );
-        RequestQueue queue = Volley.newRequestQueue(weatherHandler.getContext());
-        queue.add(jObj);
+
     }
 
 }

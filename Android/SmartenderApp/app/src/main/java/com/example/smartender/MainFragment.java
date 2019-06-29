@@ -161,8 +161,9 @@ public class MainFragment extends Fragment implements LocationListener {
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             }catch (Exception e){
-                Location loc = new Location(LocationManager.NETWORK_PROVIDER);
-                getLocationName(loc.getLatitude(),loc.getLongitude());
+                double lat = -34.6699075563091;
+                double lon = -58.56386728584767;
+                getLocationName(lat,lon);
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             }
@@ -182,6 +183,7 @@ public class MainFragment extends Fragment implements LocationListener {
                         aux = aux.replaceAll("[^\\p{ASCII}]", "");
                         setWeather(aux,lugar);
                     }else {
+                        setDate();
                         textViewCity.setText("Ubicacion desconocida");
                         textViewTemperature.setText("---");
                         textViewHumidity.setText("---");
@@ -194,6 +196,7 @@ public class MainFragment extends Fragment implements LocationListener {
             }
 
         } else {
+            setDate();
             textViewCity.setText("Ubicacion desconocida");
             textViewTemperature.setText("---");
             textViewHumidity.setText("---");
@@ -221,10 +224,7 @@ public class MainFragment extends Fragment implements LocationListener {
                     double centi = (temp_int -32)/1.8000;
                     centi = Math.round(centi);
                     int i = (int)centi;
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
-                    Date date = new Date();
-                    String fecha = dateFormat.format(date);
-                    textViewDateHour.setText(fecha);
+                    setDate();
                     textViewCity.setText(city_name);
                     textViewTemperature.setText(String.valueOf(i)+" ℃");
                     textViewHumidity.setText(hum+"%");
@@ -238,10 +238,7 @@ public class MainFragment extends Fragment implements LocationListener {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
-                Date date = new Date();
-                String fecha = dateFormat.format(date);
-                textViewDateHour.setText(fecha);
+                setDate();
                 textViewTemperature.setText("---");
                 textViewHumidity.setText("---");
                 textViewDescription.setText("");
@@ -294,6 +291,13 @@ public class MainFragment extends Fragment implements LocationListener {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setDate(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
+        Date date = new Date();
+        String fecha = dateFormat.format(date);
+        textViewDateHour.setText(fecha);
     }
 
 

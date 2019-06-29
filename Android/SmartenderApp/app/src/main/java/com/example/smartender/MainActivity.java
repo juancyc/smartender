@@ -23,6 +23,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,28 +92,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if(btHandler.btConeccted){
-            try
-            {
-                btHandler.MyConexionBT.write("9");
-                btHandler.btSocket.close();
-                setArduinoModo(false);
-                btHandler.btConeccted = false;
-            } catch (IOException e2) {}
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         try
         {
-            btHandler.MyConexionBT.write("9");
-            btHandler.btSocket.close();
-        } catch (IOException e2) {}
+            btHandler.Desconectar();
+        } catch (IOException e2) {
+            Log.i("ERROR MAIN","ON DESTROY");
+        }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,6 +148,7 @@ public class MainActivity extends AppCompatActivity
             toolbar.setTitle("Datos Historicos");
         } else if (id == R.id.nav_tools) {
             myfragment = new ArduinoFragment();
+            ArduinoFragment.estoy = true;
             selectedFragment = true;
             toolbar.setTitle("Datos Smartender");
         }
@@ -194,11 +184,11 @@ public class MainActivity extends AppCompatActivity
         float x = event.values[0];
         Sensor sensorprox = proxSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         if(x <  sensorprox.getMaximumRange()){
-            //poner led en blando
-            Log.i("SENSORES","NO HAY LUZ");
+            if(btHandler.btConeccted)
+                btHandler.MyConexionBT.write("5");
         }else{
-            Log.i("SENSORES","HAY LUZ");
-            //ver que clima hay y en eso cambiar los colores de los led
+            if(btHandler.btConeccted)
+                btHandler.MyConexionBT.write("8");
         }
 
     }
@@ -217,21 +207,18 @@ public class MainActivity extends AppCompatActivity
                             int hum = Integer.parseInt(textViewHumidity.getText().toString().split("%")[0]);
                             verifyTenderStatus(temp,hum);
                         }catch (Exception e){
-                            //obtener datos del arduino
-                            //verifyTenderStatus(temp,hum);
                             setIsShacking(false);
                         }
-                    }else {
-                        //obtener datos del arduino
-                        //verifyTenderStatus(temp,hum);
-                        setIsShacking(false);
                     }
                 }else{
                     if(btHandler.btConeccted && btHandler.VerificarEstadoBT()){
                         btHandler.MyConexionBT.write("1");
                         setTenderHidden(true);
                         addTenderDataToBD("Ocultamiento mediante SHAKE");
+                        setIsShacking(false);
                     }else {
+                        setTenderHidden(false);
+                        setIsShacking(false);
                         Toast.makeText(this,"No se encuentra conectado a Smartender",Toast.LENGTH_LONG).show();
                     }
                 }
@@ -269,6 +256,7 @@ public class MainActivity extends AppCompatActivity
         builder.show();
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -279,10 +267,16 @@ public class MainActivity extends AppCompatActivity
 
     public void tryConnect(){
         if(btHandler.Conectar()){
-            //setBtHandler(btHandler);
+            Toast.makeText(this,"Conexion exitosa",Toast.LENGTH_LONG).show();
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
+            if(currentFragment instanceof ArduinoFragment){
+                TextView textViewDatos = currentFragment.getView().findViewById(R.id.TextViewInfoArduino);
+                Button btnConexion = currentFragment.getView().findViewById(R.id.btnConexion);
+                btnConexion.setText("Desconecar Smartender");
+                //poner los datos del arduino en textview
+            }
             setArduinoModo(true);
             setIsShacking(false);
-            Toast.makeText(this,"Conexion exitosa",Toast.LENGTH_LONG).show();
         }else {
             setArduinoModo(false);
             setIsShacking(false);
@@ -333,16 +327,14 @@ public class MainActivity extends AppCompatActivity
     public void verifyTenderStatus(int temp,int hum){
         if(WeatherHandler.isWheatherOK(temp,hum)){
             if(btHandler.btConeccted && btHandler.VerificarEstadoBT()){
-            btHandler.MyConexionBT.write("2");
-            setTenderHidden(false);
-            addTenderDataToBD("Salida al sol mediante SHAKE");
-            Log.i("SENSORES","ESTOY AL SOL AHORA");
+                btHandler.MyConexionBT.write("2");
+                setTenderHidden(false);
+                addTenderDataToBD("Salida al sol mediante SHAKE");
                 setIsShacking(false);
             }else {
                 Toast.makeText(this,"No se encuentra conectado a Smartender",Toast.LENGTH_LONG).show();
                 setIsShacking(false);
             }
-
         }else {
             DialogsHandler.createSimpleDialog(this,"Advertencia","Las condiciones climaticas no son buenas para colgar la ropa.");
             setIsShacking(false);

@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class BTHandler {
 
-    Handler bluetoothIn;
+
     final int handlerState = 0;
     public BluetoothAdapter btAdapter = null;
     public BluetoothSocket btSocket = null;
@@ -27,30 +27,16 @@ public class BTHandler {
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // String para la direccion MAC
     private static String address = null;
-    public boolean btConeccted;
+    public boolean btConeccted = false;
+    public String datos = "";
 
     public BTHandler(){
-        bluetoothIn = new Handler(){
-            public void handleMessage(android.os.Message msg){
-                if(msg.what == handlerState){
-                    String readMessage = (String) msg.obj;
-                    DataStringIN.append(readMessage);
-                    /* ACA VA LA LECTURA DEL MSJ DEL BT
-                    int endOfLineIndex = DataStringIN.indexOf("#");
-                    if (endOfLineIndex > 0) {
-                        String dataInPrint = DataStringIN.substring(0, endOfLineIndex);
 
-                        DataStringIN.delete(0, DataStringIN.length());
-                    }*/
-                }
-            }
-
-        };
         btAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     public boolean Conectar(){
-        address = "98:D3:51:FD:A1:E3"; // cambiar por la de nuestro BT
+        address = "00:21:13:00:A2:13";
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
         try
         {
@@ -77,10 +63,15 @@ public class BTHandler {
         }
         MyConexionBT = new ConnectedThread(btSocket);
         MyConexionBT.start();
-        MyConexionBT.write("0");
         btConeccted = true;
+        MyConexionBT.write("0");
         return true;
 
+    }
+
+    public void Desconectar() throws IOException {
+        MyConexionBT.write("9");
+        btSocket.close();
     }
 
     public boolean VerificarEstadoBT() {
@@ -90,9 +81,9 @@ public class BTHandler {
         } else if (btAdapter.isEnabled()){
             return true;
         }
-
         return false;
     }
+
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException
     {
@@ -132,7 +123,9 @@ public class BTHandler {
                     bytes = mmInStream.read(buffer);
                     String readMessage = new String(buffer, 0, bytes);
                     // Envia los datos obtenidos hacia el evento via handler
-                    bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+                    if(ArduinoFragment.estoy)
+                        ArduinoFragment.bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+                    //bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
                 } catch (IOException e) {
                     break;
                 }

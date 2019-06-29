@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.ButtonBarLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,12 @@ public class ArduinoFragment extends Fragment {
 
     private TextView TextViewInfoArduino;
     private Button btnConexion;
+
+    public static Handler bluetoothIn;
+    final int handlerState = 0;
+    private StringBuilder DataStringIN = new StringBuilder();
+
+    public static boolean estoy = false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -81,11 +89,30 @@ public class ArduinoFragment extends Fragment {
         currentcontex =  inflater.getContext();
         vist = inflater.inflate(R.layout.fragment_arduino, container, false);
 
+        bluetoothIn = new Handler(){
+            public void handleMessage(android.os.Message msg){
+                if(msg.what == handlerState){
+                    String readMessage = (String) msg.obj;
+                    DataStringIN.append(readMessage);
+                    int endOfLineIndex = DataStringIN.indexOf("\r\n");
+                    if (endOfLineIndex > 0) {
+                        String dataInPrint = DataStringIN.substring(0, endOfLineIndex);
+                        String [] array = dataInPrint.split("-");
+                        if(array.length == 3){
+                            String aux = "Temperatura: " + array[0]  + "\nHumedad : " + array[1] +  "\nPresion Atmosferica: " + array[2];
+                            TextViewInfoArduino.setText(aux);
+                        }
+                        DataStringIN.delete(0, DataStringIN.length());
+                    }
+                }
+            }
+
+        };
+
         btnConexion = vist.findViewById(R.id.btnConexion);
         TextViewInfoArduino = vist.findViewById(R.id.TextViewInfoArduino);
 
         if(MainActivity.btHandler.btConeccted){
-            //poner los datos
             btnConexion.setText("Desconecar Smartender");
         }
         else{
@@ -105,8 +132,7 @@ public class ArduinoFragment extends Fragment {
                     }
                 }else {
                     try {
-                        MainActivity.btHandler.MyConexionBT.write("9");
-                        MainActivity.btHandler.btSocket.close();
+                        MainActivity.btHandler.Desconectar();
                         MainActivity.setArduinoModo(false);
                         MainActivity.btHandler.btConeccted = false;
                         TextViewInfoArduino.setText("No hay datos de Smartender");
@@ -136,7 +162,6 @@ public class ArduinoFragment extends Fragment {
         if(MainActivity.btHandler.Conectar()){
             MainActivity.setArduinoModo(true);
             Toast.makeText(currentcontex,"Conexion exitosa",Toast.LENGTH_LONG).show();
-            //poner datos
             btnConexion.setText("Desconecar Smartender");
         }else {
             MainActivity.setArduinoModo(false);
@@ -173,4 +198,6 @@ public class ArduinoFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
 }

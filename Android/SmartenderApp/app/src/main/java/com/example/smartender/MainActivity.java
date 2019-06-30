@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity
     public static boolean ArduinoModo;
     public static boolean isShacking;
 
+    /*
+            Override Metods
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,21 +65,31 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        //seteo el main fragment para que aparesca por defecto
         Fragment fragment = new MainFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.content_main,fragment).commit();
         navigationView.setNavigationItemSelectedListener(this);
-        conn = new DbHandler(this,"db_Smartender",null,1);
-        setTenderHidden(true); // obtener donde se encuentra en verdad
+
+        //seteo los flag de modo de trabajo
+        setTenderHidden(true);
         setArduinoModo(false);
         setIsShacking(false);
+
+        //creo objeto para manejar la base de datos
+        conn = new DbHandler(this,"db_Smartender",null,1);
+
+        //creo un objeto para conectarme al bluetooh
         btHandler = new BTHandler();
 
+        //seteo el acelerometro
         shakeSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
         shakeSensorManager.registerListener(this, shakeSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         acelVal = SensorManager.GRAVITY_EARTH;
         acelLast = SensorManager.GRAVITY_EARTH;
         shake = 0.00f;
 
+        //seteo el sensor de proximidad
         proxSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
         proxSensorManager.registerListener(this, proxSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -89,11 +102,13 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //me desconecto del bluetooh
         try
         {
             btHandler.Desconectar();
@@ -101,7 +116,6 @@ public class MainActivity extends AppCompatActivity
             Log.i("ERROR MAIN","ON DESTROY");
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,25 +126,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        //evento que maneja los cambios de fragmente dependiendo de cual se selecciono
         int id = item.getItemId();
-
         Fragment myfragment = null;
         boolean selectedFragment = false;
 
@@ -153,6 +157,7 @@ public class MainActivity extends AppCompatActivity
             toolbar.setTitle("Datos Smartender");
         }
 
+        //cambio el content main por el fragment que se selecciono
         if(selectedFragment){
            getSupportFragmentManager().beginTransaction().replace(R.id.content_main,myfragment).commit();
         }
@@ -173,6 +178,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        //metodo que cuando recibe que me conecte al bluetooh, trata de conectarse al arduino
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1 && resultCode == RESULT_OK){
+            tryConnect();
+        }
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         switch(event.sensor.getType()){
             case Sensor.TYPE_PROXIMITY: eventAProx(event);break;
@@ -180,7 +194,29 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
+            Eventos del los sensores
+     */
+
+    public boolean checkShake(SensorEvent event){
+        //Metodo encargado de verificar los datos del evento del sensor acelerometro para detectar shake
+        if(isIsShacking())
+            return false;
+
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        acelLast=acelVal;
+        acelVal= (float) Math.sqrt((double) (x*x + y*y + z*z));
+        float delta = acelVal-acelLast;
+        shake = shake * 0.9f + delta;
+
+        return shake>12 ? true : false;
+    }
+
     public void eventAProx(SensorEvent event){
+        //Metodo encargado de verificar los datos del evento del sensor de proximidad
         float x = event.values[0];
         Sensor sensorprox = proxSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         if(x <  sensorprox.getMaximumRange()){
@@ -194,6 +230,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void eventShake(SensorEvent event){
+        /*
+            1-verifico el shake
+            2-verifico si estoy en modo arduino, si no lo estoy pido conectar
+            3-Si estoy en modo arduino, veo donde estaba el tender
+                si estaba al sol lo oculto de una y actualizo la BD
+                si estaba oculto: obtengo los datos de la pantalla y verifico el estado del clima
+         */
         if(checkShake(event)){
             setIsShacking(true);
             if(isArduinoModo()){
@@ -202,10 +245,13 @@ public class MainActivity extends AppCompatActivity
                     if(currentFragment instanceof MainFragment){
                         TextView textViewTemp = currentFragment.getView().findViewById(R.id.textViewTemperature);
                         TextView textViewHumidity = currentFragment.getView().findViewById(R.id.textViewHumedad);
+                        TextView textViewLugar = currentFragment.getView().findViewById(R.id.textViewHumedad);
                         try{
                             int temp = Integer.parseInt(textViewTemp.getText().toString().split(" ")[0]);
                             int hum = Integer.parseInt(textViewHumidity.getText().toString().split("%")[0]);
-                            verifyTenderStatus(temp,hum);
+                            if(verifyTenderStatus(temp,hum))
+                                textViewLugar.setText("El tender se encuentra al sol");
+
                         }catch (Exception e){
                             setIsShacking(false);
                         }
@@ -215,6 +261,11 @@ public class MainActivity extends AppCompatActivity
                         btHandler.MyConexionBT.write("1");
                         setTenderHidden(true);
                         addTenderDataToBD("Ocultamiento mediante SHAKE");
+                        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
+                        if(currentFragment instanceof MainFragment){
+                            TextView textViewLugar = currentFragment.getView().findViewById(R.id.textViewHumedad);
+                            textViewLugar.setText("El tender se encuentra oculto");
+                        }
                         setIsShacking(false);
                     }else {
                         setTenderHidden(false);
@@ -229,13 +280,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void showDialogConnect(){
+        //Metodo encargado de mostrar el dialogo para que te conectes al arduino
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Smartender");
         builder.setMessage("No se encuentra conectado a Smarteneder.\nDesea conectarlo ?");
         builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //si aprito si, primero verifico si estoy conectado al bluetooh, si no lo estoy pide que lo conectes
                 if(!btHandler.VerificarEstadoBT()){
+                    //intent a una pantalla propia del bluetooth adapter
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, 1);
                 }else {
@@ -256,16 +310,8 @@ public class MainActivity extends AppCompatActivity
         builder.show();
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == RESULT_OK){
-            tryConnect();
-        }
-    }
-
     public void tryConnect(){
+        //llama al metodo conectar de la clase bluetooh, si se conecta setea el flag de modo de trabajo arduino
         if(btHandler.Conectar()){
             Toast.makeText(this,"Conexion exitosa",Toast.LENGTH_LONG).show();
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
@@ -285,31 +331,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public boolean checkShake(SensorEvent event){
-        if(isIsShacking())
-            return false;
-
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
-
-        acelLast=acelVal;
-        acelVal= (float) Math.sqrt((double) (x*x + y*y + z*z));
-        float delta = acelVal-acelLast;
-        shake = shake * 0.9f + delta;
-
-        return shake>12 ? true : false;
-    }
-
-    public static boolean isTenderHidden() {
-        return tenderHidden;
-    }
-
-    public static void setTenderHidden(boolean tenderHidden) {
-        MainActivity.tenderHidden = tenderHidden;
-    }
-
     public void addTenderDataToBD(String Reason){
+        //Agrega a la base de datos los datos de cuando muevo el tender
         final java.util.Calendar c = java.util.Calendar.getInstance();
         int day,month,year,hour,minutes;
         day = c.get(java.util.Calendar.DAY_OF_MONTH);
@@ -318,19 +341,21 @@ public class MainActivity extends AppCompatActivity
         hour = c.get(java.util.Calendar.HOUR_OF_DAY);
         minutes = c.get(java.util.Calendar.MINUTE);
         Tender tender = new Tender();
-        tender.setDate(day+"/"+month+"/"+year);
-        tender.setHour(hour+":"+minutes);
+        tender.setDate(EventFragment.checkFormatNumber(day)+"/"+EventFragment.checkFormatNumber(month)+"/"+year);
+        tender.setHour(EventFragment.checkFormatNumber(hour)+":"+EventFragment.checkFormatNumber(minutes));
         tender.setReason(Reason);
         TenderDao.AddTenderData(conn,tender);
     }
 
-    public void verifyTenderStatus(int temp,int hum){
+    public boolean verifyTenderStatus(int temp,int hum){
+        //verifica si el clima esta bien para mover el tender al sol y tambien si estoy conectado
         if(WeatherHandler.isWheatherOK(temp,hum)){
             if(btHandler.btConeccted && btHandler.VerificarEstadoBT()){
                 btHandler.MyConexionBT.write("2");
                 setTenderHidden(false);
                 addTenderDataToBD("Salida al sol mediante SHAKE");
                 setIsShacking(false);
+                return true;
             }else {
                 Toast.makeText(this,"No se encuentra conectado a Smartender",Toast.LENGTH_LONG).show();
                 setIsShacking(false);
@@ -338,7 +363,23 @@ public class MainActivity extends AppCompatActivity
         }else {
             DialogsHandler.createSimpleDialog(this,"Advertencia","Las condiciones climaticas no son buenas para colgar la ropa.");
             setIsShacking(false);
+            return false;
         }
+
+        return false;
+    }
+
+
+    /*
+            Getters and Setters
+     */
+
+    public static boolean isTenderHidden() {
+        return tenderHidden;
+    }
+
+    public static void setTenderHidden(boolean tenderHidden) {
+        MainActivity.tenderHidden = tenderHidden;
     }
 
     public static BTHandler getBtHandler() {

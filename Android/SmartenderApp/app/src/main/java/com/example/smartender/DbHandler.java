@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbHandler extends SQLiteOpenHelper {
 
+    //Clase que implementa SQLiteOpenHelper para la conexion con la base de datos
+
     private Context context;
 
     public DbHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

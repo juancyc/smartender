@@ -1004,6 +1004,7 @@ drawable abc_textfield_search_material
 drawable abc_vector_test
 drawable avd_hide_password
 drawable avd_show_password
+drawable datos_historicos
 drawable design_bottom_navigation_item_background
 drawable design_fab_background
 drawable design_ic_visibility
@@ -1068,7 +1069,6 @@ id action_menu_presenter
 id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
-id action_settings
 id action_text
 id actions
 id activity_chooser_view_content
@@ -1142,7 +1142,6 @@ id icon
 id icon_group
 id ifRoom
 id image
-id imageView
 id imageWeather
 id info
 id invisible
@@ -1244,13 +1243,13 @@ id text2
 id textSpacerNoButtons
 id textSpacerNoTitle
 id textStart
-id textView
 id textView1
 id textView2
 id textViewCity
 id textViewDateHour
 id textViewDescripcion
 id textViewHumedad
+id textViewLugarTender
 id textViewTemperature
 id text_input_password_toggle
 id text_view

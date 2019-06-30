@@ -70,15 +70,7 @@ public class EventFragment extends Fragment {
     public EventFragment() {
         // Required empty public constructor
     }
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EventFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static EventFragment newInstance(String param1, String param2) {
         EventFragment fragment = new EventFragment();
         Bundle args = new Bundle();
@@ -172,6 +164,7 @@ public class EventFragment extends Fragment {
     }
 
     private void createButtonsDialog(final Events eventData){
+        //Metodo que crea el dialog cuando mentengo apretado para modificar y eliminar
         AlertDialog.Builder builder = new AlertDialog.Builder(currentcontex);
         final CharSequence[] items = new CharSequence[2];
         items[0] = "Modificar Evento";
@@ -196,6 +189,8 @@ public class EventFragment extends Fragment {
     }
 
     private void createCalendarInputDataDialog(final Events eventData){
+        //Metodo que desplega el calendario y agrega a la lista los datos puestos
+        //NO SE MANEJA CON INTENT, setea los datos de una en la lista
         AlertDialog.Builder builder = new AlertDialog.Builder(currentcontex);
         LayoutInflater inflater = this.getLayoutInflater();
         View v = inflater.inflate(R.layout.event_input_data,null);
@@ -208,6 +203,8 @@ public class EventFragment extends Fragment {
         editTextFecha.setEnabled(false);
         editTextHora.setEnabled(false);
 
+        //Yo le paso un objeto evento, si este es null quiere decir que quiro agregar un evento
+        //si es != de null, es para modificar y saco los datos de ese objeto
         if(eventData == null){
             builder.setTitle("Agregar evento");
             builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
@@ -314,6 +311,7 @@ public class EventFragment extends Fragment {
     }
 
     public void getDayWeather(WeatherHandler weatherHandler, final Events event){
+        //Metodo que obtiene los datos del clima en base a la ubicacion y la API
         final String city = weatherHandler.getWeatherDaysData().replace(" ", "%20");
         if(city.length() == 0){
             int index = eventlist.indexOf(event);
@@ -340,7 +338,7 @@ public class EventFragment extends Fragment {
                             if(date.equals(event.getDate().toString())){
                                 JSONArray jWeatherArr = jDayForecast.getJSONArray("weather");
                                 JSONObject jWeatherObj = jWeatherArr.getJSONObject(0);
-                                String desc = jWeatherObj.getString("description");
+                                String desc = WeatherHandler.changeWheatherName(jWeatherObj.getString("description"));
                                 ev.setWeatherdescription(desc);
                                 int index = eventlist.indexOf(event);
                                 eventlist.remove(index);

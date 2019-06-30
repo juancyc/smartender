@@ -25,13 +25,12 @@ public class BTHandler {
     public ConnectedThread MyConexionBT;
     // Identificador unico de servicio - SPP UUID
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    // String para la direccion MAC
     private static String address = null;
     public boolean btConeccted = false;
     public String datos = "";
 
     public BTHandler(){
-
+        //En el constructor solo obtengo el adapter
         btAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
@@ -42,7 +41,6 @@ public class BTHandler {
         {
             btSocket = createBluetoothSocket(device);
         } catch (IOException e) {
-            //progressDialog.dismiss();
             btConeccted = false;
             return false;
         }
@@ -52,30 +50,32 @@ public class BTHandler {
             btSocket.connect();
         } catch (IOException e) {
             try {
-                //progressDialog.dismiss();
                 btSocket.close();
                 btConeccted = false;
                 return false;
             } catch (IOException e2) {
-                //progressDialog.dismiss();
                 return false;
             }
         }
+        //crea el thread para la escucha ya pasae de datos
         MyConexionBT = new ConnectedThread(btSocket);
         MyConexionBT.start();
+        //btConeccted la uso para saber si estoy conectado al arduino
         btConeccted = true;
+        //Le mando un 0 al arduino para que sepa que cambie a modo blueetooh
         MyConexionBT.write("0");
         return true;
 
     }
 
     public void Desconectar() throws IOException {
+        //le mando 9 para que sepa que no desconecto y cierro el socket
         MyConexionBT.write("9");
         btSocket.close();
     }
 
     public boolean VerificarEstadoBT() {
-
+        //me dice si estoy conectado al bluetooh
         if(btAdapter==null) {
             return false;
         } else if (btAdapter.isEnabled()){
@@ -87,8 +87,7 @@ public class BTHandler {
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException
     {
-        //crea un conexion de salida segura para el dispositivo
-        //usando el servicio UUID
+        //crea un conexion de salida segura para el dispositivo usando el servicio UUID
         return device.createRfcommSocketToServiceRecord(BTMODULEUUID);
     }
 

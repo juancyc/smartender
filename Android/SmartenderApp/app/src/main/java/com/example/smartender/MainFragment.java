@@ -64,7 +64,7 @@ public class MainFragment extends Fragment implements LocationListener {
     private String mParam2;
 
     private LocationManager mLocationManager;
-    private TextView textViewDateHour, textViewTemperature, textViewCity, textViewHumidity, textViewDescription;
+    private TextView textViewDateHour, textViewTemperature, textViewCity, textViewHumidity, textViewDescription, textViewLugarTender;
     private ImageView imageWeather;
     private Context currentcontex;
     private WeatherHandler weatherHandler;
@@ -77,15 +77,6 @@ public class MainFragment extends Fragment implements LocationListener {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MainFragment newInstance(String param1, String param2) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
@@ -95,6 +86,10 @@ public class MainFragment extends Fragment implements LocationListener {
         return fragment;
     }
 
+    /*
+            Override metods
+            los que importan son onCreateView y onResume()
+     */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +99,6 @@ public class MainFragment extends Fragment implements LocationListener {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,14 +112,39 @@ public class MainFragment extends Fragment implements LocationListener {
         textViewHumidity = vist.findViewById(R.id.textViewHumedad);
         textViewDescription = vist.findViewById(R.id.textViewDescripcion);
         imageWeather = vist.findViewById(R.id.imageWeather);
+        textViewLugarTender = vist.findViewById(R.id.textViewLugarTender);
+
+        if(MainActivity.isTenderHidden())
+            textViewLugarTender.setText("El tender se encuentra oculto");
+        else
+            textViewLugarTender.setText("El tender se encuentra al sol");
 
         return vist;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Verifico si tengo permisos para GPS
+        if (ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            try{
+                //Obtengo la latitud y longitud con el location manager
+                //Despues llamo al metodo que me obtiene los datos
+                weatherHandler = new WeatherHandler(currentcontex);
+                double lat = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
+                double lon = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
+                getLocationName(lat,lon);
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            }catch (Exception e){
+                double lat = -34.6699075563091;
+                double lon = -58.56386728584767;
+                getLocationName(lat,lon);
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            }
         }
     }
 
@@ -148,29 +167,51 @@ public class MainFragment extends Fragment implements LocationListener {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(currentcontex, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+    public void onPause() {
+        super.onPause();
+        mLocationManager.removeUpdates(this);
+    }
 
-            try{
-                weatherHandler = new WeatherHandler(currentcontex);
-                double lat = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
-                double lon = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
-                getLocationName(lat,lon);
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            }catch (Exception e){
-                double lat = -34.6699075563091;
-                double lon = -58.56386728584767;
-                getLocationName(lat,lon);
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            }
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.i("Clima", "Provider " + provider + " has now status: " + status);
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.i("Clima", "Provider " + provider + " is enabled");
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.i("Clima", "Provider " + provider + " is disabled");
+    }
+
+    /*
+        Metodos que me pido crear
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
+
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
         }
     }
 
+    /*
+        Metodos propios
+     */
+
     private void getLocationName(double latitude, double longitude){
+        //en base a la latid y longitud obtiene el nombre del lugar y se lo pasa a la API del clima
         if(latitude != 0.0 && longitude != 0.0){
             try {
                 Geocoder geocoder = new Geocoder(currentcontex, Locale.getDefault());
@@ -205,6 +246,7 @@ public class MainFragment extends Fragment implements LocationListener {
     }
 
     private void setWeather(String loc, final String city_name){
+        //Busca los datos del JSON que obtiene y los setea en la pantalla
         String url = "http://api.openweathermap.org/data/2.5/weather?q=";
         url += loc.replace(" ", "%20");
         url += "&appid=4c95f217ec82fde1928e70729b44c12a&units=Imperial";
@@ -217,7 +259,7 @@ public class MainFragment extends Fragment implements LocationListener {
                     JSONObject object = array.getJSONObject(0);
                     String temp = String.valueOf(main_objet.getDouble("temp"));
                     String hum = String.valueOf(main_objet.getInt("humidity"));
-                    String descripcion = object.getString("description");
+                    String descripcion = WeatherHandler.changeWheatherName(object.getString("description"));
                     String icon = object.getString("icon");
                     String iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
                     double temp_int = Double.parseDouble(temp);
@@ -250,47 +292,6 @@ public class MainFragment extends Fragment implements LocationListener {
         RequestQueue queue = Volley.newRequestQueue(currentcontex);
         queue.add(jor);
 
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mLocationManager.removeUpdates(this);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.i("Clima", "Provider " + provider + " has now status: " + status);
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Log.i("Clima", "Provider " + provider + " is enabled");
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Log.i("Clima", "Provider " + provider + " is disabled");
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 
     public void setDate(){

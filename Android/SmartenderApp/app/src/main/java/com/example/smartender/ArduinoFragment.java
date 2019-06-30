@@ -89,6 +89,7 @@ public class ArduinoFragment extends Fragment {
         currentcontex =  inflater.getContext();
         vist = inflater.inflate(R.layout.fragment_arduino, container, false);
 
+        //Handler para obtener lo que me manda el arduino y ponerlo en la pantalla
         bluetoothIn = new Handler(){
             public void handleMessage(android.os.Message msg){
                 if(msg.what == handlerState){

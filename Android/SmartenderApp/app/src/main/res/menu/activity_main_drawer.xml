@@ -18,7 +18,7 @@
             android:title="Datos historicos" />
         <item
             android:id="@+id/nav_tools"
-            android:icon="@drawable/tender"
+            android:icon="@drawable/datos_historicos"
             android:title="Datos Smartender" />
     </group>
 

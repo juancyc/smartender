@@ -41,10 +41,10 @@ public class WeatherHandler implements LocationListener {
     }
 
     public String getWeatherDaysData(){
+        //Es casi igual a la que esta en MainFragment solo que esta la uso para poder acceder desde EventFragment
+        //Esta devuelve el nombre de la ciudad
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            //validar si estoy conectado al gps o internet
             try{
                 double lat = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
                 double lon = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
@@ -118,5 +118,42 @@ public class WeatherHandler implements LocationListener {
         if(temp >10 && hum <60)
             return true;
         return false;
+    }
+
+    public static String changeWheatherName(String data){
+        if(data.equals("clear sky"))
+            return "cielo despejado";
+
+        if(data.equals("few clouds"))
+            return "pocas nubes";
+
+        if(data.equals("scattered clouds"))
+            return "nubes dispersas";
+
+        if(data.equals("broken clouds") || data.equals("clouds") || data.equals("overcast clouds"))
+            return "nublado";
+
+        if(data.equals("shower rain"))
+            return "aguacero";
+
+        if(data.equals("rain"))
+            return "lluvia";
+
+        if(data.equals("thunderstorm"))
+            return "tormenta";
+
+        if(data.equals("snow"))
+            return "nevada";
+
+        if(data.equals("light thunderstorm"))
+            return "tormenta electrica";
+
+        if(data.equals("drizzle"))
+            return "llovisna";
+
+        if(data.equals("smoke"))
+            return "neblina";
+
+        return data;
     }
 }

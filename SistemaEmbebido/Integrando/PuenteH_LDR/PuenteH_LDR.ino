@@ -7,12 +7,12 @@
 #define BMP_MOSI (11)
 #define BMP_CS   (10)
 Adafruit_BMP280 bmp;
-#include <DHT.h>
+/*#include <DHT.h>
 
 #define DHTPIN 8
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
-
+*/
 int m1Izq = 4;
 int m1Der = 5;
 int secando = 0; //0 es no hay lu mono
@@ -25,6 +25,8 @@ unsigned long previousMillis = 0;
 const long interval = 5000;
 
 float hum,temp,pres,tempBmp;    
+int btOrdenEsconder = LOW;
+int btOrdenLeds =LOW;
 void setup() {
   Serial.begin(9600);
   pinMode(pinbuzzer,OUTPUT);
@@ -51,20 +53,33 @@ void loop() {
     digitalWrite(m1Izq,LOW);
     digitalWrite(pinbuzzer,HIGH);
     previousMillis = currentMillis;
+    hum = 35;
     //int dhtDisp = leerDHT();
-    hum = dht.readHumidity();
-    temp = dht.readTemperature();
-    //tempBmp = bmp.readTemperature();
+    //hum = dht.readHumidity();
+    //temp = dht.readTemperature();
+    if(Serial.available()>0){
+      tempBmp = Serial.parseFloat();
+    }
+    else{
+    tempBmp = bmp.readTemperature();
+    }
     pres = bmp.readPressure()/100;
     Serial.print("Humedad: ");
     Serial.println(hum);
     Serial.print("Temperatura: ");
-    Serial.println(temp);
-
+    Serial.println(tempBmp);
+    Serial.print("Presion: ");
+    Serial.println(pres);
     
-    cambiarLeds(temp);
+    if(btOrdenLeds==LOW){
+    cambiarLeds(tempBmp);
+    }
+    else{
+      //leeriamos antes los valores del android
+      cambiarLedsBT();
+    }
     //poner datos de humedad, temperatura y presion aca
-    if(nohayLu()==HIGH){
+    if(nohayLu()==HIGH||(hum>60)||tempBmp<10||pres<1007||btOrdenEsconder==HIGH){
           Serial.println("No hay lu");
           //no hay lu
           if(secando != 0){
@@ -103,7 +118,7 @@ return  digitalRead(pinLDR);
 /**
  * Devuelve si pudo leer o no lo que hay en el dht
  */
-int leerDHT(){
+/*int leerDHT(){
     hum = dht.readHumidity();
     temp = dht.readTemperature();
     
@@ -115,32 +130,35 @@ int leerDHT(){
   }
   return HIGH; 
 }
+*/
+void cambiarLeds(float t){
+  analogWrite(pinRojo,0);
+  analogWrite(pinVerde,0);
+  analogWrite(pinAzul,0);
 
-void cambiarLeds(int t){
-  
   if(t>28){
-    digitalWrite(pinRojo,255);
+    analogWrite(pinRojo,255);
     return;
   }
   if(t>25){
-    digitalWrite(pinRojo,127);
-    digitalWrite(pinVerde,255);
+    analogWrite(pinRojo,127);
+    analogWrite(pinVerde,255);
     return;
   }
   if(t>18){
-    digitalWrite(pinVerde,127);
-    digitalWrite(pinAzul,255);
+    analogWrite(pinVerde,127);
+    analogWrite(pinAzul,255);
     return;
   }
 
   if(t>10){
-    digitalWrite(pinAzul,255);
+    analogWrite(pinAzul,255);
     return;
   }
-  digitalWrite(pinRojo,255);
-  digitalWrite(pinVerde,255);
+/*  digitalWrite(pinRojo,255);
+  digitalWrite(pinVerde,);
   digitalWrite(pinAzul,255);
-  
+  */
 }
 
 void secuenciaInicio(){
@@ -154,4 +172,8 @@ digitalWrite(11,0);
 digitalWrite(10,0);
 digitalWrite(9,0);
 delay(500);
+}
+
+void cambiarLedsBT(){
+  Serial.println("Todavia no hago nada bro");
 }

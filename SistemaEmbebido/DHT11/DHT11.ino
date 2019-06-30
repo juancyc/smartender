@@ -1,6 +1,6 @@
 #include <DHT.h>
 
-#define DHTPIN 2
+#define DHTPIN 8
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 void setup() {
@@ -15,7 +15,6 @@ delay(5000);
 float h = dht.readHumidity();
 float t = dht.readTemperature();
 float f = dht.readTemperature(true);
-
   if (isnan(h) || isnan(t) || isnan(f)) {
     Serial.println("Error obteniendo los datos del sensor DHT11");
     return;

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.ButtonBarLayout;
 import android.util.Log;
@@ -159,16 +160,35 @@ public class ArduinoFragment extends Fragment {
     }
 
     public void tryConnect(){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(MainActivity.btHandler.Conectar()){
+                    MainActivity.setArduinoModo(true);
+                    btnConexion.setText("Desconecar Smartender");
+                    showToast(true);
+                }else {
+                    MainActivity.setArduinoModo(false);
+                    TextViewInfoArduino.setText("No hay datos de Smartender");
+                    showToast(false);
+                }
+            }
+        });
+        
+        thread.start();
 
-        if(MainActivity.btHandler.Conectar()){
-            MainActivity.setArduinoModo(true);
-            Toast.makeText(currentcontex,"Conexion exitosa",Toast.LENGTH_LONG).show();
-            btnConexion.setText("Desconecar Smartender");
-        }else {
-            MainActivity.setArduinoModo(false);
-            TextViewInfoArduino.setText("No hay datos de Smartender");
-            Toast.makeText(currentcontex,"No se pudo conectar a Smartender",Toast.LENGTH_LONG).show();
-        }
+    }
+
+    public void showToast(final boolean estado){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(estado)
+                    Toast.makeText(currentcontex,"Conexion exitosa",Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(currentcontex,"No se pudo conectar a Smartender",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -193,6 +213,7 @@ public class ArduinoFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        estoy = false;
     }
 
     public interface OnFragmentInteractionListener {

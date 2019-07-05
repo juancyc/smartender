@@ -114,11 +114,6 @@ public class MainFragment extends Fragment implements LocationListener {
         imageWeather = vist.findViewById(R.id.imageWeather);
         textViewLugarTender = vist.findViewById(R.id.textViewLugarTender);
 
-        if(MainActivity.isTenderHidden())
-            textViewLugarTender.setText("El tender se encuentra oculto");
-        else
-            textViewLugarTender.setText("El tender se encuentra al sol");
-
         return vist;
     }
 

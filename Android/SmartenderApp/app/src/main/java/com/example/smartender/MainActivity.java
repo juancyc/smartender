@@ -1,7 +1,6 @@
 package com.example.smartender;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -245,12 +243,11 @@ public class MainActivity extends AppCompatActivity
                     if(currentFragment instanceof MainFragment){
                         TextView textViewTemp = currentFragment.getView().findViewById(R.id.textViewTemperature);
                         TextView textViewHumidity = currentFragment.getView().findViewById(R.id.textViewHumedad);
-                        TextView textViewLugar = currentFragment.getView().findViewById(R.id.textViewHumedad);
+
                         try{
                             int temp = Integer.parseInt(textViewTemp.getText().toString().split(" ")[0]);
                             int hum = Integer.parseInt(textViewHumidity.getText().toString().split("%")[0]);
-                            if(verifyTenderStatus(temp,hum))
-                                textViewLugar.setText("El tender se encuentra al sol");
+                            verifyTenderStatus(temp,hum);
 
                         }catch (Exception e){
                             setIsShacking(false);
@@ -261,11 +258,7 @@ public class MainActivity extends AppCompatActivity
                         btHandler.MyConexionBT.write("1");
                         setTenderHidden(true);
                         addTenderDataToBD("Ocultamiento mediante SHAKE");
-                        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
-                        if(currentFragment instanceof MainFragment){
-                            TextView textViewLugar = currentFragment.getView().findViewById(R.id.textViewHumedad);
-                            textViewLugar.setText("El tender se encuentra oculto");
-                        }
+
                         setIsShacking(false);
                     }else {
                         setTenderHidden(false);
@@ -311,24 +304,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void tryConnect(){
-        //llama al metodo conectar de la clase bluetooh, si se conecta setea el flag de modo de trabajo arduino
-        if(btHandler.Conectar()){
-            Toast.makeText(this,"Conexion exitosa",Toast.LENGTH_LONG).show();
-            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
-            if(currentFragment instanceof ArduinoFragment){
-                TextView textViewDatos = currentFragment.getView().findViewById(R.id.TextViewInfoArduino);
-                Button btnConexion = currentFragment.getView().findViewById(R.id.btnConexion);
-                btnConexion.setText("Desconecar Smartender");
-                //poner los datos del arduino en textview
-            }
-            setArduinoModo(true);
-            setIsShacking(false);
-        }else {
-            setArduinoModo(false);
-            setIsShacking(false);
-            Toast.makeText(this,"No se pudo conectar a Smartender",Toast.LENGTH_LONG).show();
-        }
 
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                //llama al metodo conectar de la clase bluetooh, si se conecta setea el flag de modo de trabajo arduino
+                if(btHandler.Conectar()){
+
+                    Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_main);
+                    if(currentFragment instanceof ArduinoFragment){
+                        Button btnConexion = currentFragment.getView().findViewById(R.id.btnConexion);
+                        btnConexion.setText("Desconecar Smartender");
+                    }
+                    setArduinoModo(true);
+                    setIsShacking(false);
+                    showMainToast(true);
+                }else {
+                    setArduinoModo(false);
+                    setIsShacking(false);
+                    showMainToast(false);
+                }
+            }
+
+        };
+        thread.start();
     }
 
     public void addTenderDataToBD(String Reason){
@@ -347,7 +346,7 @@ public class MainActivity extends AppCompatActivity
         TenderDao.AddTenderData(conn,tender);
     }
 
-    public boolean verifyTenderStatus(int temp,int hum){
+    public void verifyTenderStatus(int temp,int hum){
         //verifica si el clima esta bien para mover el tender al sol y tambien si estoy conectado
         if(WeatherHandler.isWheatherOK(temp,hum)){
             if(btHandler.btConeccted && btHandler.VerificarEstadoBT()){
@@ -355,7 +354,7 @@ public class MainActivity extends AppCompatActivity
                 setTenderHidden(false);
                 addTenderDataToBD("Salida al sol mediante SHAKE");
                 setIsShacking(false);
-                return true;
+                //return true;
             }else {
                 Toast.makeText(this,"No se encuentra conectado a Smartender",Toast.LENGTH_LONG).show();
                 setIsShacking(false);
@@ -363,10 +362,23 @@ public class MainActivity extends AppCompatActivity
         }else {
             DialogsHandler.createSimpleDialog(this,"Advertencia","Las condiciones climaticas no son buenas para colgar la ropa.");
             setIsShacking(false);
-            return false;
+
         }
 
-        return false;
+
+    }
+
+    public void showMainToast(final boolean estado){
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(estado)
+                    Toast.makeText(MainActivity.this,"Conexion exitosa",Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(MainActivity.this,"No se pudo conectar a Smartender",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 

@@ -33,10 +33,10 @@
         android:id="@+id/imageWeather"
         android:layout_width="196dp"
         android:layout_height="112dp"
-        android:layout_below="@+id/textViewDescripcion"
+        android:layout_below="@+id/textViewHumedad"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="27dp"
-        android:layout_marginTop="-113dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="12dp"
         android:layout_toEndOf="@+id/textViewDescripcion" />
 

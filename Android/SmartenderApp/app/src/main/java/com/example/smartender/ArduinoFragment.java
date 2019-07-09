@@ -166,11 +166,11 @@ public class ArduinoFragment extends Fragment {
                 if(MainActivity.btHandler.Conectar()){
                     MainActivity.setArduinoModo(true);
                     btnConexion.setText("Desconecar Smartender");
-                    showToast(true);
+
                 }else {
                     MainActivity.setArduinoModo(false);
                     TextViewInfoArduino.setText("No hay datos de Smartender");
-                    showToast(false);
+
                 }
             }
         });
@@ -179,17 +179,7 @@ public class ArduinoFragment extends Fragment {
 
     }
 
-    public void showToast(final boolean estado){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(estado)
-                    Toast.makeText(currentcontex,"Conexion exitosa",Toast.LENGTH_LONG).show();
-                else
-                    Toast.makeText(currentcontex,"No se pudo conectar a Smartender",Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

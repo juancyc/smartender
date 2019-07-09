@@ -103,17 +103,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //me desconecto del bluetooh
-        try
-        {
-            btHandler.Desconectar();
-        } catch (IOException e2) {
-            Log.i("ERROR MAIN","ON DESTROY");
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

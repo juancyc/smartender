@@ -1,4 +1,4 @@
-#Fri Jul 05 12:04:32 ART 2019
+#Tue Jul 09 16:52:53 ART 2019
 base.0=C\:\\Users\\ger\\Desktop\\Git\\smartender\\Android\\SmartenderApp\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\4
 path.0=classes.dex
 renamed.0=classes.dex
